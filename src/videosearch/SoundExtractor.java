@@ -19,6 +19,7 @@ import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.SilenceDetector; 
 
 
+
 public class SoundExtractor {
 //    private final static int EXTERNAL_BUFFER_SIZE = 524288; // 128Kb
 //    InputStream waveStream;
@@ -27,16 +28,19 @@ public class SoundExtractor {
 //		this.waveStream = waveStream;
 //		
 //	}
+	List<Feature> features = new ArrayList<>();
+	
 	public SoundExtractor(File audioFile, int audioBufferSize, int bufferOverlap) {
 		try {
 			AudioDispatcher dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
 			RootMeanSquareExtractor rmsExtractor = new RootMeanSquareExtractor();
-			SoundPressureLevelExtractor spe = new SoundPressureLevelExtractor();
-			
+			SoundPressureLevelExtractor spe = new SoundPressureLevelExtractor();			
 			List<Double> rms = rmsExtractor.run(dispatcher);
 //			for (Double x: rms) System.out.println(x);
+			features.add(new Feature(rmsExtractor.name, rms));
 			dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
 			List<Double> dbspl = spe.run(dispatcher);
+			features.add(new Feature(spe.name, dbspl));
 //			for (Double x: dbspl) System.out.println(x);
 			
 		} catch (UnsupportedAudioFileException exception) {
@@ -47,7 +51,10 @@ public class SoundExtractor {
 	}
 	
 	private class SoundPressureLevelExtractor {
+		String name = "sound pressure level";
 		public List<Double> run(AudioDispatcher dispatcher) {
+			
+			
 			List<Double> dbspl = new ArrayList<>();
 			SilenceDetector sd = new SilenceDetector();
 			dispatcher.addAudioProcessor(sd);
@@ -76,6 +83,7 @@ public class SoundExtractor {
 	 * 
 	 */
 	private class RootMeanSquareExtractor {
+		String name = "root mean square";
 		public List<Double> run(AudioDispatcher dispatcher) {
 			List<Double> rms = new ArrayList<>();
 			dispatcher.addAudioProcessor(new AudioProcessor() {
