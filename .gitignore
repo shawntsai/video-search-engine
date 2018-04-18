@@ -8,7 +8,8 @@ database_videos/
 .classpath
 .project
 .settings/
-
+.idea/
+out/
 
 # Compiled class file
 *.class
