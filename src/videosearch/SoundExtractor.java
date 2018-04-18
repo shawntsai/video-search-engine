@@ -47,6 +47,13 @@ public class SoundExtractor {
 			System.out.println("sbf frequencies length");
 			System.out.println(sbf.size());
 			
+			dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
+			SoundDominantFrequencyExtractor sd = new SoundDominantFrequencyExtractor();
+			List<Double> sdf = sd.run(dispatcher);
+			System.out.println("sdf frequencies length");
+			System.out.println(sdf.size());
+			
+			
 			
 		} catch (UnsupportedAudioFileException exception) {
 			System.out.println("not support this file format");
@@ -74,27 +81,17 @@ public class SoundExtractor {
 					frequencies.add((double)result.getPitch());
 					return true;
 				}
-
 				@Override
 				public void processingFinished() {}				
 			});			
 			dispatcher.run();
 			return frequencies;
 		}
-		@Override
-		public void handlePitch(PitchDetectionResult pitchDetectionResult, AudioEvent audioEvent) {
-			   double timeStamp = audioEvent.getTimeStamp(); 
-			   double pitch = pitchDetectionResult.getPitch(); 
-			   float probability = pitchDetectionResult.getProbability(); 
-			   frequencies.add(pitch);
-			   System.out.println(timeStamp+","+pitch+","+probability); 
-		}
 	}
 	
 	private class SoundDominantFrequencyExtractor {
 		String name = "dominant frequency";
-		public List<Double> run(AudioDispatcher dispatcher) {
-						
+		public List<Double> run(AudioDispatcher dispatcher) {						
 			List<Double> frequencies = new ArrayList<>();
 //			FFT fft = new FFT(audioBufferSize);
 //			float[] amplitudes = new float[audioBufferSize / 2];
@@ -103,12 +100,13 @@ public class SoundExtractor {
 			dispatcher.addAudioProcessor(new AudioProcessor() {
 				@Override
 				public boolean process(AudioEvent audioEvent) {
+					frequencies.add(findPeak(sp.getMagnitudes(), sp.getFrequencyEstimates()));
+
 //					float[] audioFloatBuffer = audioEvent.getFloatBuffer();
 //					float[] transformBuffer = new float[audioBufferSize*2];
 //					System.arraycopy(audioFloatBuffer, 0, transformBuffer, 0, audioFloatBuffer.length);
 //					fft.forwardTransform(transformBuffer);
 //					fft.modulus(transformBuffer, amplitudes);					
-					frequencies.add(findPeak(sp.getMagnitudes(), sp.getFrequencyEstimates());
 					return true;
 				}
 
