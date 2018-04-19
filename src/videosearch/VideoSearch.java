@@ -10,9 +10,7 @@ public class VideoSearch {
 	static List<Video> videos = new ArrayList<>();
 	
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
+	public static void main(String[] args) {		
 		try {
 			
 			String queryFolder = "query";
@@ -39,7 +37,13 @@ public class VideoSearch {
 			ranker.compare(queryVideo.features.get(method1));
 			while (ranker.scores.isEmpty() == false) {
 				Score s = ranker.scores.poll();
-				System.out.println(s.videoName);				
+				System.out.println(s.videoName);			
+				System.out.println(s.score);
+				for (double v : s.getDistribution()) {
+					System.out.print(v);
+					System.out.print(" ");
+				}
+				break;
 			}
 			
 			

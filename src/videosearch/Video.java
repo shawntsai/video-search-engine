@@ -23,7 +23,9 @@ public class Video {
 		}
 		
 		ImageFeatureExtractor imageExtractor = new ImageFeatureExtractor(new File(imagePath));
-		
+		for (Feature f: imageExtractor.features) {
+			this.features.put(f.method, f.data);
+		}
 		
 	}
 	

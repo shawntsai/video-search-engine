@@ -1,24 +1,35 @@
 package videosearch;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
 class Score {
 	String videoName;
-	double[] scores;
-	double maxScore = 0;
-	public Score(String videoName, double[] scores) {
+	double[] diffs;
+	double score = 0;
+	public Score(String videoName, double[] diffs) {
 		this.videoName = videoName;
-		this.scores = scores;
-		this.setMaxScore();
+		this.diffs = diffs;
+		this.setScore();
 	}
-	public void setMaxScore() {
-		double max = Integer.MAX_VALUE;
-		for (double s: scores) {
-			if (max < s) max = s;
+	// score is min diff
+	public void setScore() {
+		double sum = 0;
+		for (double s: diffs) {
+			sum += s;
 		}
-		this.maxScore = max;
+		this.score = -sum;
 	}
+	
+	public double[] getDistribution() {
+		double maxDiff = Double.MIN_VALUE;		
+		for (double diff: diffs) maxDiff = Math.max(diff, maxDiff);
+		double[] score = new double[diffs.length];
+		for (int i = 0; i < score.length; i++) score[i] = 1 - diffs[i] / maxDiff;
+		return score;
+	}
+	
 }
 
 public class Rank {
@@ -28,14 +39,21 @@ public class Rank {
 	public Rank(List<Video> videos, String method) {
 		this.videos = videos;
 		this.method = method;
-		this.scores = new PriorityQueue<>((a, b) -> (int) (b.maxScore - a.maxScore));
+		scores = new PriorityQueue<Score> (new Comparator<Score>() {
+			@Override
+			public int compare(Score o1, Score o2) {
+				if (o1.score == o2.score) return 0;
+				else if (o1.score < o2.score) return 1;
+				else return -1;
+			}			
+		});
 	}			
 
-	private void compare(double[] query) {
-		Descriptor descirptor = new Descriptor();
+	private void compare(double[] query) {		
 		for (Video video: videos) {
 			double[] target = listToArray(video.features.get(method));
-			Score score = new Score(video.name, descirptor.getScores(query, target));
+			Descriptor descirptor = new Descriptor(query, target);			
+			Score score = new Score(video.name, descirptor.diffs);
 			scores.offer(score);
 		}
 	
