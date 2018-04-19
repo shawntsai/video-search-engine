@@ -6,6 +6,7 @@ public class VideoSearchUI extends JFrame {
     public VideoSearchUI() {
         initComponents();
     }
+    // This is generated from IDE's UI builder
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
@@ -312,6 +313,9 @@ public class VideoSearchUI extends JFrame {
 
     private void queryTermActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        // This will pass the input query to backend
+
+
     }
 
     private void totalActionPerformed(java.awt.event.ActionEvent evt) {
