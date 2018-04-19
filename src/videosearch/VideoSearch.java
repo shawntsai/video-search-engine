@@ -22,7 +22,7 @@ public class VideoSearch {
 				if (fileOrFolder.isDirectory()) {
 					String q = fileOrFolder.getName();
 					String audioFilePath = dbName + "/" + q + "/" + q + ".wav";
-					videos.add(new Video(q, audioFilePath));					
+					videos.add(new Video(q, audioFilePath, dbName + "/" + q));					
 				}
 			}
 			for (Video video: videos) {
@@ -31,7 +31,7 @@ public class VideoSearch {
 			// 
 			String q = "first";
 			
-			Video queryVideo = new Video(q, queryFolder + "/" + q + "/" + q + ".wav");
+			Video queryVideo = new Video(q, queryFolder + "/" + q + "/" + q + ".wav", queryFolder + "/" + q);
 			queryVideo.extractFeature();
 			
 			String method1 = "root mean square";
@@ -42,7 +42,9 @@ public class VideoSearch {
 				System.out.println(s.videoName);				
 			}
 			
-			String audioFilePath = "database_videos/flowers/flowers.wav";
+			
+			
+//			String audioFilePath = "database_videos/flowers/flowers.wav";
 			
 //			FileInputStream audioStream = new FileInputStream("");
 //			PlaySound playSound = new PlaySound(audioStream);
