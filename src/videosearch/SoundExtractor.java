@@ -13,46 +13,38 @@ import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.SilenceDetector;
 import be.tarsos.dsp.SpectralPeakProcessor;
 import be.tarsos.dsp.io.jvm.AudioDispatcherFactory;
-import be.tarsos.dsp.pitch.PitchDetectionHandler;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchDetector;
-import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.pitch.PitchProcessor.PitchEstimationAlgorithm;
-import be.tarsos.dsp.SpectralPeakProcessor; 
-import be.tarsos.dsp.SpectralPeakProcessor.SpectralPeak; 
 
 
 
 public class SoundExtractor {
 	List<Feature> features = new ArrayList<>();
 	int audioBufferSize;
+	int bufferOverlap;
+	File audioFile;
+	
+	private interface Extractor {
+		List<Double> run() throws UnsupportedAudioFileException, IOException;
+		String name();
+	}
+
 	public SoundExtractor(File audioFile, int audioBufferSize, int bufferOverlap) {
 		this.audioBufferSize = audioBufferSize;
+		this.bufferOverlap = bufferOverlap;
+		this.audioFile = audioFile;
 		try {
-			AudioDispatcher dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
-			RootMeanSquareExtractor rmsExtractor = new RootMeanSquareExtractor();
-			SoundPressureLevelExtractor spe = new SoundPressureLevelExtractor();			
-			List<Double> rms = rmsExtractor.run(dispatcher);
-//			for (Double x: rms) System.out.println(x);
-			features.add(new Feature(rmsExtractor.name, rms));
-			dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
-			List<Double> dbspl = spe.run(dispatcher);
-			features.add(new Feature(spe.name, dbspl));
-//			for (Double x: dbspl) System.out.println(x);
 			
-			
-			dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
-			SoundBaseFrequencyExtractor sb = new SoundBaseFrequencyExtractor();
-			List<Double> sbf = sb.run(dispatcher);
-			System.out.println("sbf frequencies length");
-			System.out.println(sbf.size());
-			
-			dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
-			SoundDominantFrequencyExtractor sd = new SoundDominantFrequencyExtractor();
-			List<Double> sdf = sd.run(dispatcher);
-			System.out.println("sdf frequencies length");
-			System.out.println(sdf.size());
-			
+			List<Extractor> extractors = new ArrayList<Extractor>();
+			extractors.add(new RootMeanSquareExtractor());
+			extractors.add(new SoundBaseFrequencyExtractor());
+			extractors.add(new SoundDominantFrequencyExtractor());
+			extractors.add(new SoundPressureLevelExtractor());
+			for (Extractor extractor: extractors) {
+				List<Double> scores = extractor.run();
+				features.add(new Feature(extractor.name(), scores));
+			}
 			
 			
 		} catch (UnsupportedAudioFileException exception) {
@@ -62,10 +54,12 @@ public class SoundExtractor {
 		}		
 	}
 	
-	private class SoundBaseFrequencyExtractor {
+	private class SoundBaseFrequencyExtractor implements Extractor{
 		String name = "base frequency";
 		
-		public List<Double> run(AudioDispatcher dispatcher) {
+		public List<Double> run() throws UnsupportedAudioFileException, IOException {
+			AudioDispatcher dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
+
 			List<Double> frequencies = new ArrayList<>();
 			PitchEstimationAlgorithm algo = PitchEstimationAlgorithm.FFT_YIN; 
 			PitchDetector detector = algo.getDetector(44100, audioBufferSize);			
@@ -87,11 +81,22 @@ public class SoundExtractor {
 			dispatcher.run();
 			return frequencies;
 		}
+
+		@Override
+		public String name() {			
+			return name;
+		}
 	}
 	
-	private class SoundDominantFrequencyExtractor {
+	private class SoundDominantFrequencyExtractor implements Extractor{
 		String name = "dominant frequency";
-		public List<Double> run(AudioDispatcher dispatcher) {						
+		@Override
+		public String name() {			
+			return name;
+		}
+		public List<Double> run() throws UnsupportedAudioFileException, IOException {
+			AudioDispatcher dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
+
 			List<Double> frequencies = new ArrayList<>();
 //			FFT fft = new FFT(audioBufferSize);
 //			float[] amplitudes = new float[audioBufferSize / 2];
@@ -134,10 +139,15 @@ public class SoundExtractor {
 	}
 	
 	
-	private class SoundPressureLevelExtractor {
+	private class SoundPressureLevelExtractor implements Extractor {
 		String name = "sound pressure level";
-		public List<Double> run(AudioDispatcher dispatcher) {
-			
+		@Override
+		public String name() {			
+			return name;
+		}
+		public List<Double> run() throws UnsupportedAudioFileException, IOException {
+			AudioDispatcher dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
+
 			
 			List<Double> dbspl = new ArrayList<>();
 			SilenceDetector sd = new SilenceDetector();
@@ -166,9 +176,15 @@ public class SoundExtractor {
 	 * @author shawn
 	 * 
 	 */
-	private class RootMeanSquareExtractor {
+	private class RootMeanSquareExtractor implements Extractor {
 		String name = "root mean square";
-		public List<Double> run(AudioDispatcher dispatcher) {
+		@Override
+		public String name() {			
+			return name;
+		}
+		public List<Double> run() throws UnsupportedAudioFileException, IOException {
+			AudioDispatcher dispatcher = AudioDispatcherFactory.fromFile(audioFile, audioBufferSize, bufferOverlap);
+
 			List<Double> rms = new ArrayList<>();
 			dispatcher.addAudioProcessor(new AudioProcessor() {
 				@Override

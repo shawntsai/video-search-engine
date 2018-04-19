@@ -13,7 +13,8 @@ public class ImageFeatureExtractor {
 	final static int height = 288;
 	final static int width = 352;
 	final static int MaxPixelTreshold = 50;
-	
+	List<Feature> features = new ArrayList<>();
+
 	public ImageFeatureExtractor(File folder) {
 		
 		File[] rgbFiles = folder.listFiles(new FilenameFilter() {
@@ -23,13 +24,15 @@ public class ImageFeatureExtractor {
 			}
 		});
 		
+		ImageMotionExtractor ext = new ImageMotionExtractor();
+		features.add(new Feature(ext.name, ext.run(rgbFiles)));		
 	}
 	
 	private class ImageMotionExtractor {
 		String name = "rgb image motion";
-		public int[] run(File[] rgbFiles) {
+		public double[] run(File[] rgbFiles) {
 			
-			int[] result = new int[rgbFiles.length];
+			double[] result = new double[rgbFiles.length];
 			if (rgbFiles.length < 1) return result;
 			
 			int[] prevPixels = readPixels(rgbFiles[0].getPath());
@@ -49,6 +52,16 @@ public class ImageFeatureExtractor {
 			return result;
 		}		
 	}
+	
+	private class ImageColorExtractor {
+		String name = "rgb color";
+		public double[] run(File[] rgbFiles) {
+			
+			
+			
+		}		
+	}
+
 	
 	
 	public int[] readPixels(String filePath) {
