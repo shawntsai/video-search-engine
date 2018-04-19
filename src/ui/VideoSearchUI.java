@@ -1,16 +1,24 @@
-package videosearchui;
+package ui;
+
+import ui.controller.ImageParser;
+import ui.controller.VideoPlayer;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+
+import static java.lang.Thread.sleep;
 
 public class VideoSearchUI extends JFrame {
     public VideoSearchUI() {
         initComponents();
     }
-    // This is generated from IDE's UI builder
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
+        desciptorGroup = new javax.swing.ButtonGroup();
         SearchPanel = new javax.swing.JPanel();
         searchTag = new javax.swing.JLabel();
         queryTerm = new javax.swing.JTextField();
@@ -20,6 +28,7 @@ public class VideoSearchUI extends JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         result = new javax.swing.JList<>();
         resultTag = new javax.swing.JLabel();
+        loadedResult = new javax.swing.JButton();
         TypePanel = new javax.swing.JPanel();
         total = new javax.swing.JRadioButton();
         motion = new javax.swing.JRadioButton();
@@ -30,11 +39,13 @@ public class VideoSearchUI extends JFrame {
         pauseS = new javax.swing.JButton();
         stopS = new javax.swing.JButton();
         queryImageLabel = new javax.swing.JLabel();
+        queryPreviewLabel = new javax.swing.JLabel();
         ResultPreview = new javax.swing.JPanel();
         playR = new javax.swing.JButton();
         pauseR = new javax.swing.JButton();
         stopR = new javax.swing.JButton();
         dbImageLabel = new javax.swing.JLabel();
+        dbPreviewLabel = new javax.swing.JLabel();
         VisualResult = new javax.swing.JPanel();
         frameChoose = new javax.swing.JSlider();
         VisualDescriptor = new javax.swing.JScrollPane();
@@ -52,6 +63,11 @@ public class VideoSearchUI extends JFrame {
         submission.setText("search");
 
         loadedsource.setText("Load Query Video");
+        loadedsource.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadedsourceActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout SearchPanelLayout = new javax.swing.GroupLayout(SearchPanel);
         SearchPanel.setLayout(SearchPanelLayout);
@@ -89,6 +105,13 @@ public class VideoSearchUI extends JFrame {
 
         resultTag.setText("Result");
 
+        loadedResult.setText("Load Result Video");
+        loadedResult.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadedResultActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout ResultPanelLayout = new javax.swing.GroupLayout(ResultPanel);
         ResultPanel.setLayout(ResultPanelLayout);
         ResultPanelLayout.setHorizontalGroup(
@@ -97,26 +120,25 @@ public class VideoSearchUI extends JFrame {
                                 .addGap(22, 22, 22)
                                 .addComponent(resultTag)
                                 .addGap(18, 18, 18)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(ResultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(loadedResult, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(22, Short.MAX_VALUE))
         );
         ResultPanelLayout.setVerticalGroup(
                 ResultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ResultPanelLayout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
                         .addGroup(ResultPanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(resultTag)
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(ResultPanelLayout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(loadedResult)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        ButtonGroup group = new ButtonGroup();
-        group.add(total);
-        group.add(color);
-        group.add(sound);
-        group.add(motion);
-
+        desciptorGroup.add(total);
         total.setText("Total");
         total.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -124,26 +146,14 @@ public class VideoSearchUI extends JFrame {
             }
         });
 
+        desciptorGroup.add(motion);
         motion.setText("Motion");
-        motion.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                totalActionPerformed(evt);
-            }
-        });
 
+        desciptorGroup.add(color);
         color.setText("Color");
-        color.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                totalActionPerformed(evt);
-            }
-        });
 
+        desciptorGroup.add(sound);
         sound.setText("Sound");
-        sound.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                totalActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout TypePanelLayout = new javax.swing.GroupLayout(TypePanel);
         TypePanel.setLayout(TypePanelLayout);
@@ -176,33 +186,59 @@ public class VideoSearchUI extends JFrame {
         );
 
         playS.setText("Play");
-
+        playS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playActionPerformed(e);
+            }
+        });
         pauseS.setText("Pause");
+        pauseS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pauseActionPerformed(e);
+            }
+        });
 
         stopS.setText("Stop");
+        stopS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stopActionPerformed(e);
+            }
+        });
 
-        queryImageLabel.setIcon(new ImageIcon());
+        queryImageLabel.setIcon(new ImageIcon(defaultImg));
+
+        queryPreviewLabel.setText("Query Video Preview");
 
         javax.swing.GroupLayout SourcePreviewLayout = new javax.swing.GroupLayout(SourcePreview);
         SourcePreview.setLayout(SourcePreviewLayout);
         SourcePreviewLayout.setHorizontalGroup(
                 SourcePreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(SourcePreviewLayout.createSequentialGroup()
-                                .addGap(23, 23, 23)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, SourcePreviewLayout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(playS)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(pauseS)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(stopS)
-                                .addContainerGap(83, Short.MAX_VALUE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, SourcePreviewLayout.createSequentialGroup()
+                                .addGap(48, 48, 48))
+                        .addGroup(SourcePreviewLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(queryImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(SourcePreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(queryImageLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
+                                        .addGroup(SourcePreviewLayout.createSequentialGroup()
+                                                .addComponent(queryPreviewLabel)
+                                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         SourcePreviewLayout.setVerticalGroup(
                 SourcePreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(SourcePreviewLayout.createSequentialGroup()
-                                .addComponent(queryImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap()
+                                .addComponent(queryPreviewLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                                .addComponent(queryImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addGroup(SourcePreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(playS)
@@ -216,6 +252,10 @@ public class VideoSearchUI extends JFrame {
         pauseR.setText("Pause");
 
         stopR.setText("Stop");
+
+        dbImageLabel.setIcon(new ImageIcon(defaultImg));
+
+        dbPreviewLabel.setText("DataBase Video Preview");
 
         javax.swing.GroupLayout ResultPreviewLayout = new javax.swing.GroupLayout(ResultPreview);
         ResultPreview.setLayout(ResultPreviewLayout);
@@ -231,15 +271,21 @@ public class VideoSearchUI extends JFrame {
                                 .addGap(48, 48, 48))
                         .addGroup(ResultPreviewLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(dbImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(ResultPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(dbImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
+                                        .addGroup(ResultPreviewLayout.createSequentialGroup()
+                                                .addComponent(dbPreviewLabel)
+                                                .addGap(0, 0, Short.MAX_VALUE)))
                                 .addContainerGap())
         );
         ResultPreviewLayout.setVerticalGroup(
                 ResultPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ResultPreviewLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(dbImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(dbPreviewLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(dbImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
                                 .addGroup(ResultPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                                         .addComponent(stopR)
                                         .addComponent(playR)
@@ -247,23 +293,31 @@ public class VideoSearchUI extends JFrame {
                                 .addContainerGap())
         );
 
+        frameChoose.setMaximum(150);
+        frameChoose.setMinimum(1);
+        frameChoose.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                frameChooseStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout VisualResultLayout = new javax.swing.GroupLayout(VisualResult);
         VisualResult.setLayout(VisualResultLayout);
         VisualResultLayout.setHorizontalGroup(
                 VisualResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(VisualResultLayout.createSequentialGroup()
-                                .addGap(17, 17, 17)
-                                .addGroup(VisualResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(VisualDescriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(frameChoose, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap(21, Short.MAX_VALUE))
+                                .addGap(31, 31, 31)
+                                .addGroup(VisualResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(VisualDescriptor, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                                        .addComponent(frameChoose, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap(33, Short.MAX_VALUE))
         );
         VisualResultLayout.setVerticalGroup(
                 VisualResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, VisualResultLayout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap(18, Short.MAX_VALUE)
                                 .addComponent(VisualDescriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(frameChoose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap())
         );
@@ -273,38 +327,36 @@ public class VideoSearchUI extends JFrame {
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                                .addGap(16, 16, 16)
+                                .addGap(6, 6, 6)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
                                                 .addComponent(SourcePreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                        .addComponent(VisualResult, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(ResultPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                                        .addComponent(ResultPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addGap(18, 18, 18)
-                                                        .addComponent(TypePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                .addComponent(SearchPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addContainerGap(28, Short.MAX_VALUE))
+                                                .addComponent(ResultPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(6, 6, 6)
+                                                .addComponent(ResultPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(TypePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(SearchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(VisualResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(44, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addGap(16, 16, 16)
                                 .addComponent(SearchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(ResultPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(TypePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                                 .addComponent(VisualResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(38, 38, 38)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(ResultPreview, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(SourcePreview, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(SourcePreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(ResultPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
         );
 
@@ -313,13 +365,48 @@ public class VideoSearchUI extends JFrame {
 
     private void queryTermActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-        // This will pass the input query to backend
-
-
     }
 
     private void totalActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+    }
+
+    private void loadedResultActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
+    }
+
+    private void frameChooseStateChanged(javax.swing.event.ChangeEvent evt) {
+        // TODO add your handling code here:
+
+    }
+
+    private void playActionPerformed(ActionEvent evt) {
+        if(evt.getSource() == this.playS) {
+            queryControl.play();
+        }else if(evt.getSource() == this.playR) {
+            // TODO Result Preview player
+        }
+
+    }
+
+    private void pauseActionPerformed(ActionEvent evt) {
+        if(evt.getSource() == this.pauseS) {
+            queryControl.pause();
+        }
+    }
+
+    private void stopActionPerformed(ActionEvent evt) {
+        if(evt.getSource() == this.stopS) {
+            queryControl.stop();
+        }
+    }
+
+    private void loadedsourceActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO bind query term:
+        ImageParser source= new ImageParser(150);
+        queryFrames = source.parseAllImg();
+        this.queryControl = new VideoPlayer(150,queryImageLabel,queryFrames);
+
     }
 
     /**
@@ -341,11 +428,11 @@ public class VideoSearchUI extends JFrame {
 //        } catch (ClassNotFoundException ex) {
 //            java.util.logging.Logger.getLogger(VideoSearchUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(VideoSearchUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(VideoSearchUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(CelsiusConverterGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(VideoSearchUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(CelsiusConverterGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
         //</editor-fold>
 
@@ -369,8 +456,11 @@ public class VideoSearchUI extends JFrame {
     private javax.swing.JPanel VisualResult;
     private javax.swing.JRadioButton color;
     private javax.swing.JLabel dbImageLabel;
+    private javax.swing.JLabel dbPreviewLabel;
+    private javax.swing.ButtonGroup desciptorGroup;
     private javax.swing.JSlider frameChoose;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton loadedResult;
     private javax.swing.JButton loadedsource;
     private javax.swing.JRadioButton motion;
     private javax.swing.JButton pauseR;
@@ -378,6 +468,7 @@ public class VideoSearchUI extends JFrame {
     private javax.swing.JButton playR;
     private javax.swing.JButton playS;
     private javax.swing.JLabel queryImageLabel;
+    private javax.swing.JLabel queryPreviewLabel;
     private javax.swing.JTextField queryTerm;
     private javax.swing.JList<String> result;
     private javax.swing.JLabel resultTag;
@@ -388,5 +479,12 @@ public class VideoSearchUI extends JFrame {
     private javax.swing.JButton submission;
     private javax.swing.JRadioButton total;
     // End of variables declaration
+
+    // custom variable for handling event
+    private final static String PATH = "query/first/first001.rgb";
+    private BufferedImage defaultImg = new ImageParser(150).parseImg(PATH);
+    private BufferedImage[] queryFrames;
+    private BufferedImage[] resultFrames;
+    private VideoPlayer queryControl;
 
 }
