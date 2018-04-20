@@ -7,28 +7,30 @@ import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
 public class VideoPlayer {
-    private final static int FRAMERATE = 30;
+    private final static int FRAME_RATE = 30;
     public Thread imageThread;
     public int currentFrame;
     private PlayerStatus status;
     private int maxFrameNum;
-    private JLabel dispalyArea;
+    private JLabel displayArea;
     private BufferedImage[] sourceFrames;
 
     public VideoPlayer(int maxFrameNum, JLabel area, BufferedImage[] sourceFrames) {
         this.currentFrame = 1;
         this.maxFrameNum = maxFrameNum;
-        this.dispalyArea = area;
+        this.displayArea = area;
         this.sourceFrames = sourceFrames;
     }
+
+
 
     public void play() {
         status = PlayerStatus.Play;
         imageThread = new Thread(() -> {
             for(int cur = this.currentFrame; cur <= this.maxFrameNum; cur++) {
-                dispalyArea.setIcon(new ImageIcon(sourceFrames[cur]));
+                displayArea.setIcon(new ImageIcon(sourceFrames[cur]));
                 try {
-                    sleep(1000/FRAMERATE);
+                    sleep(1000/ FRAME_RATE);
                 }catch(InterruptedException e) {
                     if(status == PlayerStatus.Stop) {
                       this.currentFrame = 1;
@@ -36,7 +38,7 @@ public class VideoPlayer {
                         this.currentFrame = cur;
                         // status = PlayerStatus.Play;
                     }
-                    dispalyArea.setIcon(new ImageIcon(sourceFrames[this.currentFrame]));
+                    displayArea.setIcon(new ImageIcon(sourceFrames[this.currentFrame]));
                     currentThread().interrupt();
                     break;
                 }
@@ -44,7 +46,6 @@ public class VideoPlayer {
             if(status == PlayerStatus.Play) {
                 status = PlayerStatus.Stop;
                 this.currentFrame = 1;
-//                this.imageThread = null;
             }
         });
         imageThread.start();
@@ -69,9 +70,13 @@ public class VideoPlayer {
         }
     }
 
-    private void displayDefaultImg() {
+    public void setCurrentFrame(int num) {
+        this.currentFrame = num;
+    }
+
+    public void displayDefaultImg() {
         Thread initThread = new Thread(()->
-           this.dispalyArea.setIcon(new ImageIcon(sourceFrames[this.currentFrame]))
+           this.displayArea.setIcon(new ImageIcon(sourceFrames[this.currentFrame]))
         );
         initThread.start();
     }

@@ -295,6 +295,7 @@ public class VideoSearchUI extends JFrame {
 
         frameChoose.setMaximum(150);
         frameChoose.setMinimum(1);
+        frameChoose.setValue(0);
         frameChoose.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 frameChooseStateChanged(evt);
@@ -377,6 +378,14 @@ public class VideoSearchUI extends JFrame {
 
     private void frameChooseStateChanged(javax.swing.event.ChangeEvent evt) {
         // TODO add your handling code here:
+        JSlider source = (JSlider) evt.getSource();
+        if(!source.getValueIsAdjusting()) {
+            System.out.println("stop adjusted");
+            int frameNum = source.getValue();
+            System.out.println("Move to frame Num: " + frameNum);
+            this.queryControl.setCurrentFrame(frameNum);
+            this.queryControl.displayDefaultImg();
+        }
 
     }
 
