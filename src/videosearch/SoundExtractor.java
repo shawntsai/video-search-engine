@@ -200,7 +200,7 @@ public class SoundExtractor {
 				
 			});
 			dispatcher.run(); 
-			System.out.println(rms.size());
+//			System.out.println(rms.size());
 			return rms;
 		}
 	}

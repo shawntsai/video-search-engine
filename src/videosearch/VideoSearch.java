@@ -1,7 +1,6 @@
 package videosearch;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,26 +25,43 @@ public class VideoSearch {
 			for (Video video: videos) {
 				video.extractFeature();
 			}
-			// 
 			String q = "first";
 			
 			Video queryVideo = new Video(q, queryFolder + "/" + q + "/" + q + ".wav", queryFolder + "/" + q);
 			queryVideo.extractFeature();
 			
-			String method1 = "root mean square";
-			Rank ranker = new Rank(videos, method1);
-			ranker.compare(queryVideo.features.get(method1));
-			while (ranker.scores.isEmpty() == false) {
-				Score s = ranker.scores.poll();
-				System.out.println(s.videoName);			
-				System.out.println(s.score);
-				for (double v : s.getDistribution()) {
-					System.out.print(v);
-					System.out.print(" ");
+			for (String method: queryVideo.features.keySet()) {
+//				System.out.println("rank this");
+//				System.out.println(method);
+				Rank ranker = new Rank(videos, method);
+				ranker.compare(queryVideo.features.get(method));
+				int i = 1;
+				while (ranker.scores.isEmpty() == false) {
+					Score s = ranker.scores.poll();
+					System.out.println(i++);
+					System.out.println(s.videoName);			
+//					System.out.println(s.score);
+					System.out.println(s.ratio);
+					System.out.println("start frame is ");
+					System.out.println((int) (600 * s.ratio));
+					System.out.println(s.getDistribution());
 				}
-				break;
 			}
 			
+//			String method1 = "root mean square";
+//			Rank ranker = new Rank(videos, method1);
+//			ranker.compare(queryVideo.features.get(method1));
+//			while (ranker.scores.isEmpty() == false) {
+//				Score s = ranker.scores.poll();
+//				System.out.println(s.videoName);			
+//				System.out.println(s.score);
+//				for (double v : s.getDistribution()) {
+//					System.out.print(v);
+//					System.out.print(" ");
+//				}
+//				break;
+//			}
+//			
 			
 			
 //			String audioFilePath = "database_videos/flowers/flowers.wav";
@@ -53,9 +69,6 @@ public class VideoSearch {
 //			FileInputStream audioStream = new FileInputStream("");
 //			PlaySound playSound = new PlaySound(audioStream);
 //			playSound.play();
-//			Video v = new Video("flowers", audioFilePath);
-//			v.extractFeature();
-			
 
 		
 		} 
@@ -67,6 +80,7 @@ public class VideoSearch {
 //		}
 		catch (Exception e) {
 			System.out.println("something wrong");
+			e.printStackTrace();
 		}
 		
 	}

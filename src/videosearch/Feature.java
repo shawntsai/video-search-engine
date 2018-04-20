@@ -6,13 +6,14 @@ import java.util.List;
 public class Feature {
 	String method;
 	List<Double> data;
+	public Feature() {}
 	public Feature (String m, List<Double> f) {
 		this.method = m;
 		this.data = f;
 	}
 	public Feature (String m, double[] f) {
 		this.method = m;
-		this.data = new ArrayList<Double>();
+		this.data = new ArrayList<>();
 		for (double v: f) this.data.add(v);
 	}
 }

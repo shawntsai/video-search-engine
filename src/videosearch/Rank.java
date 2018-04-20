@@ -8,10 +8,12 @@ class Score {
 	String videoName;
 	double[] diffs;
 	double score = 0;
-	public Score(String videoName, double[] diffs) {
+	double ratio = 0;
+	public Score(String videoName, double[] diffs, double ratio) {
 		this.videoName = videoName;
 		this.diffs = diffs;
 		this.setScore();
+		this.ratio = ratio;
 	}
 	// score is min diff
 	public void setScore() {
@@ -48,26 +50,19 @@ public class Rank {
 			}			
 		});
 	}			
+	
 
-	private void compare(double[] query) {		
-		for (Video video: videos) {
-			double[] target = listToArray(video.features.get(method));
-			Descriptor descirptor = new Descriptor(query, target);			
-			Score score = new Score(video.name, descirptor.diffs);
+	public void compare(Feature feature) {
+		for (Video video: videos) {			
+			Feature target = video.features.get(method);			
+			Descriptor descriptor = new Descriptor(feature, target);
+			
+			Score score = new Score(video.name, descriptor.diffs, descriptor.ratio);
 			scores.offer(score);
 		}
 	
 	}
 	
-	public void compare(List<Double> query) {
-		compare(listToArray(query));
-	}
 
-	double[] listToArray(List<Double> data) {
-		double[] result = new double[data.size()];
-		for (int i = 0; i < data.size(); i++) {
-			result[i] = data.get(i);
-		}
-		return result;
-	}
+
 }

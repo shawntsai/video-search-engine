@@ -1,5 +1,6 @@
 package videosearch;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,8 +26,16 @@ public class ImageFeatureExtractor {
 		});
 		
 		ImageMotionExtractor ext = new ImageMotionExtractor();
-		features.add(new Feature(ext.name, ext.run(rgbFiles)));		
+		Feature f = new Feature(ext.name, ext.run(rgbFiles));
+		features.add(f);		
+				
+		ImageColorExtractor extColor = new ImageColorExtractor();
+		List<int[]> l = extColor.run(rgbFiles);
+		
+		features.add(new ColorFeature(extColor.name, l));		
+		
 	}
+	
 	
 	private class ImageMotionExtractor {
 		String name = "rgb image motion";
@@ -49,20 +58,68 @@ public class ImageFeatureExtractor {
 					result[i] = numMoves;
 				}				
 			}
+			assert(result.length != 0);
+//			System.out.println("motion result");
+//			System.out.println(result.length);
 			return result;
+			
 		}		
 	}
 	
 	private class ImageColorExtractor {
 		String name = "rgb color";
-		public double[] run(File[] rgbFiles) {
-			
-			
-			
+		final int numColors = 5; 
+		public List<int[]> run(File[] rgbFiles) {
+			List<int[]> r = new ArrayList<>();
+			for (File f: rgbFiles) {
+				int[] huesCount = readhues(f.getPath(), numColors);
+				r.add(huesCount);
+			}
+			return r;
 		}		
 	}
 
-	
+	private int[] readhues(String filePath, int numColors) {
+		int[] hues = new int[numColors];
+		try {
+			File file = new File(filePath);
+			InputStream is = new FileInputStream(file);
+			
+			long len = file.length();
+			byte[] bytes = new byte[(int) len];
+			
+			int offset = 0;
+			int numRead = 0;
+			
+			while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+				offset += numRead;
+			}
+			int ind = 0;
+			for(int y = 0; y < height; y++){
+				for(int x = 0; x < width; x++){
+
+					byte r = bytes[ind];
+					byte g = bytes[ind+height*width];
+					byte b = bytes[ind+height*width*2]; 
+					// Hue is the actual color
+					
+					float hue = Color.RGBtoHSB(r, g, b, null)[0];
+					if (hue >= 0 && hue < 1./6) hues[0] += 1;
+					else if (hue < 2./6) hues[1] += 1;
+					else if (hue < 3./6) hues[2] += 1;
+					else if (hue < 4./6) hues[3] += 1;
+					if (hue < 5./6) hues[4] += 1;
+					ind ++;
+				}
+			}
+			
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		return hues;
+	}
 	
 	public int[] readPixels(String filePath) {
 		int[] pixels = new int[height * width];
@@ -89,13 +146,14 @@ public class ImageFeatureExtractor {
 					byte g = bytes[ind+height*width];
 					byte b = bytes[ind+height*width*2]; 
 					
-//					imageR[y][x] = r < 0 ? r + 256 : r;
-//					imageG[y][x] = g < 0 ? g + 256 : g;
-//					imageB[y][x] = b < 0 ? b + 256 : b;
+//					imageR[y][x] = r < 0 ? r + 255 : r;
+//					imageG[y][x] = g < 0 ? g + 255 : g;
+//					imageB[y][x] = b < 0 ? b + 255 : b;
 										
 					int pix = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 					//int pix = ((a << 24) + (r << 16) + (g << 8) + b);
 //					original.setRGB(x, y, pix);
+					// Hue is the actual color					
 					pixels[ind] = pix;
 					ind++;	
 				}
