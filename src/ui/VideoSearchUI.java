@@ -1,9 +1,11 @@
 package ui;
 
+import ui.component.ProgressPanel;
 import ui.controller.ImageParser;
 import ui.controller.VideoPlayer;
 
 import ui.model.LineChart;
+import ui.model.ResultModel;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -61,20 +63,10 @@ public class VideoSearchUI extends JFrame {
 
         searchTag.setText("Find:");
 
-        queryTerm.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                queryTermActionPerformed(evt);
-            }
-        });
-
         submission.setText("search");
 
         loadedsource.setText("Load Query Video");
-        loadedsource.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadedsourceActionPerformed(evt);
-            }
-        });
+
 
         javax.swing.GroupLayout SearchPanelLayout = new javax.swing.GroupLayout(SearchPanel);
         SearchPanel.setLayout(SearchPanelLayout);
@@ -103,21 +95,19 @@ public class VideoSearchUI extends JFrame {
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        result.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+        result.setModel( new ResultModel()
+//                new javax.swing.AbstractListModel<String>() {
+//            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+//            public int getSize() { return strings.length; }
+//            public String getElementAt(int i) { return strings[i]; }
+//        }
+        );
         jScrollPane1.setViewportView(result);
 
         resultTag.setText("Result");
 
         loadedResult.setText("Load Result Video");
-        loadedResult.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadedResultActionPerformed(evt);
-            }
-        });
+
 
         javax.swing.GroupLayout ResultPanelLayout = new javax.swing.GroupLayout(ResultPanel);
         ResultPanel.setLayout(ResultPanelLayout);
@@ -304,11 +294,7 @@ public class VideoSearchUI extends JFrame {
 
         frameChoose.setMaximum(150);
         frameChoose.setMinimum(1);
-        frameChoose.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                frameChooseStateChanged(evt);
-            }
-        });
+
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -379,11 +365,47 @@ public class VideoSearchUI extends JFrame {
                 pauseActionPerformed(e);
             }
         });
+        submission.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                queryTermActionPerformed(e);
+            }
+        });
+        loadedsource.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadedsourceActionPerformed(evt);
+            }
+        });
+        loadedResult.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadedResultActionPerformed(evt);
+            }
+        });
+        frameChoose.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                frameChooseStateChanged(evt);
+            }
+        });
 
     }// </editor-fold>
 
+    /*
+     * When the user submit the query term, do the action
+     */
     private void queryTermActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+
+        ProgressPanel monitor = new ProgressPanel(VideoSearchUI.this, "Running long task",
+                this.submission, this.result, this.queryTerm.getText());
+
+        String query = this.queryTerm.getText();
+        if(query != null && !query.isEmpty()) {
+            monitor.activeProgress();
+//            lists = source.getData(query);
+//            model.updateModel(source.buildString(lists));
+//            this.result.setModel(model);
+        }
+
     }
 
     private void totalActionPerformed(java.awt.event.ActionEvent evt) {
