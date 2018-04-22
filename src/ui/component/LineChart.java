@@ -1,4 +1,4 @@
-package ui.model;
+package ui.component;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
