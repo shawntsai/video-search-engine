@@ -40,6 +40,7 @@ public class ProgressPanel implements PropertyChangeListener {
             Toolkit.getDefaultToolkit().beep();
             button.setEnabled(true);
             progressMonitor.setProgress(0);
+            progressMonitor.close();
             MockData source = new MockData();
             Wrapper[] lists;
             ResultModel model = new ResultModel();
