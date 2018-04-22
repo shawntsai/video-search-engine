@@ -4,7 +4,7 @@ import ui.component.ProgressPanel;
 import ui.controller.ImageParser;
 import ui.controller.VideoPlayer;
 
-import ui.model.LineChart;
+import ui.component.LineChart;
 import ui.model.ResultModel;
 
 import javax.swing.*;
@@ -341,6 +341,14 @@ public class VideoSearchUI extends JFrame {
         pack();
 
         // add manually
+        motion.setActionCommand("rgb image motion");
+        color.setActionCommand("rgb color");
+        baseFreq.setActionCommand("base frequency");
+        dominantFreq.setActionCommand("dominant frequency");
+        soundPressLevel.setActionCommand("sound pressure level");
+        rootMeanSquare.setActionCommand("root mean square");
+
+
         result.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -398,9 +406,12 @@ public class VideoSearchUI extends JFrame {
         ProgressPanel monitor = new ProgressPanel(VideoSearchUI.this, "Running long task",
                 this.submission, this.result, this.queryTerm.getText());
 
-        String query = this.queryTerm.getText();
-        if(query != null && !query.isEmpty()) {
+        String query = this.queryTerm.getText().trim();
+        ButtonModel choice = desciptorGroup.getSelection();
+        if(checkInput(query,choice)) {
             monitor.activeProgress();
+            String method = choice.getActionCommand();
+            System.out.println(method);
 //            lists = source.getData(query);
 //            model.updateModel(source.buildString(lists));
 //            this.result.setModel(model);
@@ -408,8 +419,27 @@ public class VideoSearchUI extends JFrame {
 
     }
 
-    private void totalActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+    private boolean checkInput(String query, ButtonModel descriptor) {
+        if(query != null && !query.isEmpty() && descriptor != null)
+            return true;
+
+        if(query == null) {
+            JOptionPane.showMessageDialog(null,
+                    "query cannot be empty",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }else if(descriptor == null) {
+            JOptionPane.showMessageDialog(null,
+                    "Please select one of descriptor",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }else if(query.isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "query cannot be empty",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
     }
 
     private void loadedResultActionPerformed(java.awt.event.ActionEvent evt) {
