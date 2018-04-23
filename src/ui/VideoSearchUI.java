@@ -5,7 +5,9 @@ import ui.controller.ImageParser;
 import ui.controller.VideoPlayer;
 
 import ui.component.LineChart;
+import ui.model.AllResultModel;
 import ui.model.ResultModel;
+import videosearch.VideoSearch;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -394,6 +396,44 @@ public class VideoSearchUI extends JFrame {
                 frameChooseStateChanged(evt);
             }
         });
+        motion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                descriptorSelectedActionPerformed(e);
+            }
+        });
+        color.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                descriptorSelectedActionPerformed(e);
+            }
+        });
+        baseFreq.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                descriptorSelectedActionPerformed(e);
+            }
+        });
+        dominantFreq.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                descriptorSelectedActionPerformed(e);
+            }
+        });
+        soundPressLevel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                descriptorSelectedActionPerformed(e);
+            }
+        });
+        rootMeanSquare.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                descriptorSelectedActionPerformed(e);
+            }
+        });
+
+
 
     }// </editor-fold>
 
@@ -403,15 +443,30 @@ public class VideoSearchUI extends JFrame {
     private void queryTermActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
 
-        ProgressPanel monitor = new ProgressPanel(VideoSearchUI.this, "Running long task",
-                this.submission, this.result, this.queryTerm.getText());
+
 
         String query = this.queryTerm.getText().trim();
         ButtonModel choice = desciptorGroup.getSelection();
-        if(checkInput(query,choice)) {
-            monitor.activeProgress();
-            String method = choice.getActionCommand();
-            System.out.println(method);
+        if(checkInput(query)) {
+//            ProgressPanel monitor = new ProgressPanel(VideoSearchUI.this, "Compare with Database...",
+//                    this.submission, this.result, query);
+//            monitor.activeProgress(searcher);
+//            String method = choice.getActionCommand();
+//            System.out.println(method);
+            searcher.loadQuery(query);
+            searcher.compareDB();
+
+            String method;
+            if(choice == null) {
+                method = DEFAULT_METHOD;
+                baseFreq.setSelected(true);
+            }else {
+                method = choice.getActionCommand();
+            }
+            ResultModel model = new ResultModel();
+            String[] resultList = searcher.getStoredResult().getResultList(method);
+            model.updateModel(resultList);
+            result.setModel(model);
 //            lists = source.getData(query);
 //            model.updateModel(source.buildString(lists));
 //            this.result.setModel(model);
@@ -419,18 +474,25 @@ public class VideoSearchUI extends JFrame {
 
     }
 
-    private boolean checkInput(String query, ButtonModel descriptor) {
-        if(query != null && !query.isEmpty() && descriptor != null)
+    private void descriptorSelectedActionPerformed(ActionEvent evt) {
+        String method = desciptorGroup.getSelection().getActionCommand();
+        if(!searcher.getStoredResult().isResultEmpty()) {
+            ResultModel model = new ResultModel();
+            String[] resultList = searcher.getStoredResult().getResultList(method);
+            model.updateModel(resultList);
+            result.setModel(model);
+        }
+        System.out.println(method);
+    }
+
+
+    private boolean checkInput(String query) {
+        if(query != null && !query.isEmpty())
             return true;
 
         if(query == null) {
             JOptionPane.showMessageDialog(null,
                     "query cannot be empty",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }else if(descriptor == null) {
-            JOptionPane.showMessageDialog(null,
-                    "Please select one of descriptor",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }else if(query.isEmpty()) {
@@ -525,6 +587,7 @@ public class VideoSearchUI extends JFrame {
         /* Create and display the form */
 //        VideoSearchUI ui = new VideoSearchUI();
 //        ui.setVisible(true);
+        searcher.loadDataBase();
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new VideoSearchUI().setVisible(true);
@@ -576,5 +639,7 @@ public class VideoSearchUI extends JFrame {
     private BufferedImage[] queryFrames;
     private BufferedImage[] resultFrames;
     private VideoPlayer queryControl;
-
+    private AllResultModel searchResults = new AllResultModel();
+    private static VideoSearch searcher = new VideoSearch();
+    private final static String DEFAULT_METHOD = "base frequency";
 }
