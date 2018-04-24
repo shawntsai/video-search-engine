@@ -35,9 +35,8 @@ public class Rank {
 		}
 	}
 
-	public Queue<Score> getScores() {
+	public PriorityQueue<Score> getScores() {
 		return this.scores;
 	}
-
 
 }

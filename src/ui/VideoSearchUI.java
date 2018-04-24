@@ -1,5 +1,6 @@
 package ui;
 
+import org.jfree.data.category.CategoryDataset;
 import ui.component.ProgressPanel;
 import ui.controller.ImageParser;
 import ui.controller.VideoPlayer;
@@ -476,6 +477,9 @@ public class VideoSearchUI extends JFrame {
 
     private void descriptorSelectedActionPerformed(ActionEvent evt) {
         String method = desciptorGroup.getSelection().getActionCommand();
+        this.VisualResult.removeAll();
+        this.VisualResult.revalidate();
+
         if(!searcher.getStoredResult().isResultEmpty()) {
             ResultModel model = new ResultModel();
             String[] resultList = searcher.getStoredResult().getResultList(method);
@@ -523,8 +527,11 @@ public class VideoSearchUI extends JFrame {
     private void selectedResultPerformed(ListSelectionEvent evt) {
         if(!evt.getValueIsAdjusting()) {
             LineChart lineChart = new LineChart(this.VisualResult);
-            System.out.println(result.getSelectedValue());
-            lineChart.update(result.getSelectedValue());
+            String method = this.desciptorGroup.getSelection().getActionCommand();
+            String videoName = result.getSelectedValue();
+//            System.out.println(result.getSelectedValue());
+            CategoryDataset dataSets = this.searcher.getStoredResult().getDistribution(method, videoName);
+            lineChart.update(dataSets);
         }
     }
 

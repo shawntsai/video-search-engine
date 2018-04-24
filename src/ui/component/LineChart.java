@@ -65,20 +65,21 @@ public class LineChart{
 //        setContentPane( chartPanel );
     }
 
-    public void update(String input) {
+    public void update(CategoryDataset dataset) {
 //        clearArea(this.area);
 //        JButton button = new JButton("Click me");
 //        button.setBounds(0,0,300,100);
 //        this.area.add(button);
 //        area.validate();
 //        area.repaint();
-        // TODO: This part will connect to backend
-        CategoryDataset dataset;
-        if(input.equals(mock1)) {
-            dataset = createDataset();
-        }else {
-            dataset = anotherDataset();
-        }
+        if(dataset == null)
+            return;
+
+//        if(input.equals(mock1)) {
+//            dataset = createDataset();
+//        }else {
+//            dataset = anotherDataset();
+//        }
 
 
         JFreeChart newChart = ChartFactory.createLineChart(
@@ -97,21 +98,21 @@ public class LineChart{
         area.repaint();
     }
 
-    private CategoryDataset createDataset() {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
-        for(int i = 1; i < 150; i++) {
-            dataset.addValue(15 + i, "similarity", Integer.toString(i));
-        }
-        return dataset;
-    }
-
-    private CategoryDataset anotherDataset() {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
-        for(int i = 1; i < 150; i++) {
-            dataset.addValue(15 * Math.PI + i, "similarity", Integer.toString(i));
-        }
-        return dataset;
-    }
+//    private CategoryDataset createDataset() {
+//        DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
+//        for(int i = 1; i < 150; i++) {
+//            dataset.addValue(15 + i, "similarity", Integer.toString(i));
+//        }
+//        return dataset;
+//    }
+//
+//    private CategoryDataset anotherDataset() {
+//        DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
+//        for(int i = 1; i < 150; i++) {
+//            dataset.addValue(15 * Math.PI + i, "similarity", Integer.toString(i));
+//        }
+//        return dataset;
+//    }
 
     private void setChartProperty(JFreeChart chart) {
         chart.removeLegend();
