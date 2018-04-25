@@ -6,14 +6,15 @@ import java.io.*;
 public class ImageParser {
     private final static int WIDTH = 352;
     private final static int HEIGHT = 288;
-    private final static String PATH = "query/first/first001.rgb";
-    private final static String FOLDER = "query/first/";
-    private final static String filePrefix = "first";
+    private final String folder;
+    private final String filePrefix;
     private final static String filePostfix = ".rgb";
     private BufferedImage[] frames;
 
-    public ImageParser(int framsNum) {
+    public ImageParser(int framsNum, String filePrefix, String folderDest) {
         frames = new BufferedImage[framsNum + 1];
+        this.filePrefix = filePrefix;
+        this.folder = folderDest+ filePrefix +"/";
     }
 
     public BufferedImage parseImg(String fullName) {
@@ -54,15 +55,16 @@ public class ImageParser {
         return image;
     }
 
-    public BufferedImage[] parseAllImg() {
+    public BufferedImage[] parseAllImg(int starAt, boolean isQuery) {
         for(int i = 1; i < frames.length; i++) {
-            StringBuilder file = new StringBuilder(FOLDER);
+            StringBuilder file = new StringBuilder(folder);
             file.append(filePrefix);
-            if( i > 9 && i < 100)
+            int frameNum = isQuery ? i : starAt + i - 1;
+            if( frameNum > 9 && frameNum < 100)
                 file.append("0");
-            else if(i < 10)
+            else if(frameNum < 10)
                 file.append("00");
-            file.append(i);
+            file.append(frameNum);
             file.append(filePostfix);
             frames[i] = parseImg(new String(file));
         }

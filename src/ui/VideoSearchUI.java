@@ -3,6 +3,7 @@ package ui;
 import org.jfree.data.category.CategoryDataset;
 import ui.component.ProgressPanel;
 import ui.controller.ImageParser;
+import ui.controller.PlaySound;
 import ui.controller.VideoPlayer;
 
 import ui.component.LineChart;
@@ -297,6 +298,7 @@ public class VideoSearchUI extends JFrame {
 
         frameChoose.setMaximum(150);
         frameChoose.setMinimum(1);
+        frameChoose.setValue(1);
 
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -352,88 +354,26 @@ public class VideoSearchUI extends JFrame {
         rootMeanSquare.setActionCommand("root mean square");
 
 
-        result.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                selectedResultPerformed(e);
-            }
-        });
-        playS.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playActionPerformed(e);
-            }
-        });
-        stopS.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                stopActionPerformed(e);
-            }
-        });
-        pauseS.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pauseActionPerformed(e);
-            }
-        });
-        submission.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                queryTermActionPerformed(e);
-            }
-        });
-        loadedsource.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadedsourceActionPerformed(evt);
-            }
-        });
-        loadedResult.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadedResultActionPerformed(evt);
-            }
-        });
-        frameChoose.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                frameChooseStateChanged(evt);
-            }
-        });
-        motion.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                descriptorSelectedActionPerformed(e);
-            }
-        });
-        color.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                descriptorSelectedActionPerformed(e);
-            }
-        });
-        baseFreq.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                descriptorSelectedActionPerformed(e);
-            }
-        });
-        dominantFreq.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                descriptorSelectedActionPerformed(e);
-            }
-        });
-        soundPressLevel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                descriptorSelectedActionPerformed(e);
-            }
-        });
-        rootMeanSquare.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                descriptorSelectedActionPerformed(e);
-            }
-        });
+        result.addListSelectionListener(e -> selectedResultPerformed(e));
 
+        playS.addActionListener(e -> playActionPerformed(e));
+        stopS.addActionListener(e -> stopActionPerformed(e));
+        pauseS.addActionListener(e -> pauseActionPerformed(e));
+        playR.addActionListener(e -> playActionPerformed(e));
+        stopR.addActionListener(e -> stopActionPerformed(e));
+        pauseR.addActionListener(e -> pauseActionPerformed(e));
+
+
+        submission.addActionListener(e -> queryTermActionPerformed(e));
+        loadedsource.addActionListener(e -> loadedSourceActionPerformed(e));
+        loadedResult.addActionListener(e -> loadedResultActionPerformed(e));
+        frameChoose.addChangeListener(e -> frameChooseStateChanged(e));
+        motion.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        color.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        baseFreq.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        dominantFreq.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        soundPressLevel.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        rootMeanSquare.addActionListener(e -> descriptorSelectedActionPerformed(e));
 
 
     }// </editor-fold>
@@ -443,9 +383,6 @@ public class VideoSearchUI extends JFrame {
      */
     private void queryTermActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-
-
-
         String query = this.queryTerm.getText().trim();
         ButtonModel choice = desciptorGroup.getSelection();
         if(checkInput(query)) {
@@ -508,12 +445,10 @@ public class VideoSearchUI extends JFrame {
         return false;
     }
 
-    private void loadedResultActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
+    /*
+     *  Handle when the slide bar is changed
+     */
     private void frameChooseStateChanged(javax.swing.event.ChangeEvent evt) {
-        // TODO add your handling code here:
         JSlider source = (JSlider) evt.getSource();
         if(!source.getValueIsAdjusting()) {
             System.out.println("stop adjusted");
@@ -521,6 +456,8 @@ public class VideoSearchUI extends JFrame {
             System.out.println("Move to frame Num: " + frameNum);
             this.queryControl.setCurrentFrame(frameNum);
             this.queryControl.displayDefaultImg();
+            this.dbControl.setCurrentFrame(frameNum);
+            this.dbControl.displayDefaultImg();
         }
     }
 
@@ -540,6 +477,7 @@ public class VideoSearchUI extends JFrame {
             queryControl.play();
         }else if(evt.getSource() == this.playR) {
             // TODO Result Preview player
+            dbControl.play();
         }
 
     }
@@ -547,22 +485,61 @@ public class VideoSearchUI extends JFrame {
     private void pauseActionPerformed(ActionEvent evt) {
         if(evt.getSource() == this.pauseS) {
             queryControl.pause();
+        }else if(evt.getSource() == this.pauseR) {
+            // TODO Result Preview player
+            dbControl.pause();
         }
     }
 
     private void stopActionPerformed(ActionEvent evt) {
         if(evt.getSource() == this.stopS) {
             queryControl.stop();
+        }else if(evt.getSource() == this.stopR) {
+            dbControl.stop();
         }
     }
 
-    private void loadedsourceActionPerformed(java.awt.event.ActionEvent evt) {
+    private void loadedSourceActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO bind query term:
-        ImageParser source= new ImageParser(150);
-        queryFrames = source.parseAllImg();
-        this.queryControl = new VideoPlayer(150,queryImageLabel,queryFrames);
+        String query = this.queryTerm.getText().trim();
+        if(query == null || query.isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "query is empty",
+                    "Load Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        ImageParser source= new ImageParser(150, query, QUERY_FOLDER);
+        queryFrames = source.parseAllImg(FRAME_ON_QUERY, true);
+        queryImageLabel.setIcon(new ImageIcon(queryFrames[FRAME_ON_QUERY]));
+
+        String audioPath = QUERY_FOLDER + query + "/" + query + ".wav";
+        PlaySound soundPlayer = new PlaySound(audioPath);
+        this.queryControl = new VideoPlayer(150,queryImageLabel,queryFrames, soundPlayer);
 
     }
+
+    private void loadedResultActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
+        if(result.getSelectedValue() == null) {
+            JOptionPane.showMessageDialog(null,
+                    "Please select one result",
+                    "Load Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String method = this.desciptorGroup.getSelection().getActionCommand();
+        String videoName = result.getSelectedValue();
+        int startFrame = searcher.getStoredResult().getResultStartAt(method,videoName);
+        ImageParser source = new ImageParser(150, videoName, DB_FOLDER);
+        resultFrames = source.parseAllImg(startFrame, false);
+        dbImageLabel.setIcon(new ImageIcon(resultFrames[FRAME_ON_QUERY]));
+
+        String audioPath = DB_FOLDER + videoName + "/" +videoName + ".wav";
+        PlaySound soundPlayer = new PlaySound(audioPath);
+        this.dbControl = new VideoPlayer(150, dbImageLabel, resultFrames, soundPlayer);
+    }
+
 
     /**
      * @param args the command line arguments
@@ -641,12 +618,14 @@ public class VideoSearchUI extends JFrame {
     // End of variables declaration
 
     // custom variable for handling event
-    private final static String PATH = "query/first/first001.rgb";
-    private BufferedImage defaultImg = new ImageParser(150).parseImg(PATH);
+    private String defaultImg = "assets/default.png";
     private BufferedImage[] queryFrames;
     private BufferedImage[] resultFrames;
     private VideoPlayer queryControl;
-    private AllResultModel searchResults = new AllResultModel();
+    private VideoPlayer dbControl;
     private static VideoSearch searcher = new VideoSearch();
     private final static String DEFAULT_METHOD = "base frequency";
+    private final static String QUERY_FOLDER = "query/";
+    private final static String DB_FOLDER = "database_videos/";
+    private final static int FRAME_ON_QUERY = 1;
 }
