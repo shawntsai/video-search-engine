@@ -50,7 +50,7 @@ public class VideoSearch {
 	}
 
     public AllResultModel compareDB() {
-//		AllResultModel storedResult = new AllResultModel();
+	    this.storedResult = new AllResultModel();
         for (String method: queryVideo.features.keySet()) {
             Rank ranker = new Rank(videos, method);
             ranker.compare(queryVideo.features.get(method));
