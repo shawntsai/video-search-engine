@@ -59,7 +59,7 @@ public class ImageParser {
         for(int i = 1; i < frames.length; i++) {
             StringBuilder file = new StringBuilder(folder);
             file.append(filePrefix);
-            int frameNum = isQuery ? i : starAt + i - 1;
+            int frameNum = isQuery ? i : starAt + i;
             if( frameNum > 9 && frameNum < 100)
                 file.append("0");
             else if(frameNum < 10)
