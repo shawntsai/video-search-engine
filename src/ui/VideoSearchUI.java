@@ -391,6 +391,7 @@ public class VideoSearchUI extends JFrame {
 //            monitor.activeProgress(searcher);
 //            String method = choice.getActionCommand();
 //            System.out.println(method);
+
             searcher.loadQuery(query);
             searcher.compareDB();
 
@@ -515,7 +516,8 @@ public class VideoSearchUI extends JFrame {
 
         String audioPath = QUERY_FOLDER + query + "/" + query + ".wav";
         PlaySound soundPlayer = new PlaySound(audioPath);
-        this.queryControl = new VideoPlayer(150,queryImageLabel,queryFrames, soundPlayer);
+        this.queryControl = new VideoPlayer(150, queryImageLabel,
+                queryFrames, soundPlayer, this.playS);
 
     }
 
@@ -537,7 +539,9 @@ public class VideoSearchUI extends JFrame {
 
         String audioPath = DB_FOLDER + videoName + "/" +videoName + ".wav";
         PlaySound soundPlayer = new PlaySound(audioPath);
-        this.dbControl = new VideoPlayer(150, dbImageLabel, resultFrames, soundPlayer);
+        this.dbControl = new VideoPlayer(150, dbImageLabel, resultFrames, soundPlayer,
+                this.playR);
+        this.dbControl.setCurrentSoundFrame(startFrame);
     }
 
 
@@ -628,4 +632,5 @@ public class VideoSearchUI extends JFrame {
     private final static String QUERY_FOLDER = "query/";
     private final static String DB_FOLDER = "database_videos/";
     private final static int FRAME_ON_QUERY = 1;
+//    private final static int IMG_TO_SOUND_RATIO = 221184/150;
 }
