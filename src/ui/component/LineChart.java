@@ -23,64 +23,11 @@ public class LineChart{
 
     public LineChart(JPanel targetArea) {
         this.area = targetArea;
-//        JFreeChart lineChart = ChartFactory.createLineChart(
-//                null,
-//                "","",
-//                createDataset(),
-//                PlotOrientation.VERTICAL,
-//                false,false,false);
-//        setChartProperty(lineChart);
-//
-//
-//
-//
-//        ChartPanel chartPanel = new ChartPanel( lineChart );
-//        chartPanel.setPreferredSize(new java.awt.Dimension( 300 , 100 ) );
-//
-//        clearArea(this.area);
-//        this.area.add(chartPanel);
-//        b.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                JFreeChart lineChart = ChartFactory.createLineChart(
-//                        null,
-//                        "Years","Number of Schools",
-//                        anotherDataset(),
-//                        PlotOrientation.VERTICAL,
-//                        true,true,false);
-//                jPanel.removeAll();
-//                jPanel.revalidate();
-//                ChartPanel chartPanel1 = new ChartPanel(lineChart);
-//                chartPanel1.setPreferredSize(new java.awt.Dimension( 300 , 100 ) );
-//                jPanel.add(chartPanel1);
-//                jPanel.repaint();
-//            }
-//        });
-//        jPanel.repaint();
-//        JFrame frame = new JFrame();
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.add(jPanel);
-//        frame.pack();
-//        frame.setVisible(true);
-//        setContentPane( chartPanel );
     }
 
     public void update(CategoryDataset dataset) {
-//        clearArea(this.area);
-//        JButton button = new JButton("Click me");
-//        button.setBounds(0,0,300,100);
-//        this.area.add(button);
-//        area.validate();
-//        area.repaint();
         if(dataset == null)
             return;
-
-//        if(input.equals(mock1)) {
-//            dataset = createDataset();
-//        }else {
-//            dataset = anotherDataset();
-//        }
-
 
         JFreeChart newChart = ChartFactory.createLineChart(
                 null,
@@ -97,22 +44,6 @@ public class LineChart{
         area.validate();
         area.repaint();
     }
-
-//    private CategoryDataset createDataset() {
-//        DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
-//        for(int i = 1; i < 150; i++) {
-//            dataset.addValue(15 + i, "similarity", Integer.toString(i));
-//        }
-//        return dataset;
-//    }
-//
-//    private CategoryDataset anotherDataset() {
-//        DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
-//        for(int i = 1; i < 150; i++) {
-//            dataset.addValue(15 * Math.PI + i, "similarity", Integer.toString(i));
-//        }
-//        return dataset;
-//    }
 
     private void setChartProperty(JFreeChart chart) {
         chart.removeLegend();
