@@ -31,7 +31,7 @@ public class ImageParser {
             while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
                 offset += numRead;
             }
-            System.out.println("Start loading frame: " + fullName);
+//            System.out.println("Start loading frame: " + fullName);
             int index = 0;
 
             for (int y = 0; y < HEIGHT; y++) {
@@ -46,7 +46,7 @@ public class ImageParser {
             }
 //            images.add(image);
             is.close();
-            System.out.println("End loading frame: " + fullName);
+//            System.out.println("End loading frame: " + fullName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

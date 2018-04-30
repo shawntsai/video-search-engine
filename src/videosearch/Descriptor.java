@@ -19,53 +19,64 @@ public class Descriptor {
 //		System.out.println("method ---- --------------");
 //		System.out.println(feature.method);
 		if (feature.method.equals("rgb color")) {
-			System.out.println("rgb color descriptor");
 			ColorFeature cfeature = (ColorFeature) feature;
 			ColorFeature ctarget = (ColorFeature) target;
 			
 			diffs = setDifferences(cfeature.data, ctarget.data);
-			
+			for (double diff: diffs) {
+				System.out.print(diff + " ");
+			}
 			
 		} else {
 			diffs = setDifferences(listToArray(feature.data), listToArray(target.data));
 		}
-		
+//		
 	}
 	
 	private double[] setDifferences(List<int[]> query, List<int[]> target) {
 		System.out.println(query.size());
 		System.out.println(target.size());
 		double[] diffs = new double[query.size()];
-		int minHueDiff = Integer.MAX_VALUE;
+		double minHueDiff = Double.MAX_VALUE;
 		int st = 0;
 		for (int i = 0; i <= target.size() - query.size(); i++) {
-			int hueDiff = 0;
+			double hueDiff = 0;
 			for (int j = 0; j < query.size(); j++) {				
-				hueDiff += Math.abs(getHueDiff(query.get(j), target.get(i + j)));				
+				hueDiff += getHueMaxDiff(query.get(j), target.get(i + j));		
 			}
 			if (hueDiff < minHueDiff) {
 				minHueDiff = hueDiff;
 				st = i;
 			}
 		}
-		for (int i = st; i < diffs.length; i++) {
-			diffs[i] = Math.abs(getHueDiff(query.get(i), target.get(i)));
+		
+		for (int i = 0; i < diffs.length; i++) {
+			diffs[i] = getHueMaxDiff(query.get(i), target.get(i + st));			
+		
 		}
-		System.out.println("total is ");
-		System.out.println(target.size());
-		System.out.println("start frame is here");
-		System.out.println(st);
+		
 		setStartRatio(st, target.size());
 		return diffs;
 	}
-	
+	private double getHueMaxDiff(int[] is, int[] is2) {
+		double diff = 0;
+		for (int i = 0; i < is.length; i++) {
+			diff = Math.max(diff, Math.abs(is[i] - is2[i]));
+			
+		}
+		return diff;
+	}
+
 	
 
-	private int getHueDiff(int[] is, int[] is2) {
-		int diff = 0;
+	private double getHueDiff(int[] is, int[] is2) {
+		double diff = 0;
 		for (int i = 0; i < is.length; i++) {
 			diff += Math.abs(is[i] - is2[i]);
+			
 		}
+//		System.out.println("hue diff");
+//		System.out.println(Math.log(diff));
 		return diff;
 	}
 

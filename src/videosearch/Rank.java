@@ -6,7 +6,6 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 
-
 public class Rank {
 	PriorityQueue<Score> scores;
 	String method;
@@ -29,7 +28,10 @@ public class Rank {
 		for (Video video: videos) {			
 			Feature target = video.features.get(method);			
 			Descriptor descriptor = new Descriptor(feature, target);
-			
+//			System.out.println("compare");
+//			for (double diff: descriptor.diffs) {
+//				System.out.print(diff + " ");
+//			}
 			Score score = new Score(video.name, descriptor.diffs, descriptor.ratio);
 			scores.offer(score);
 		}

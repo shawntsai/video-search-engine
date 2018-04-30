@@ -35,9 +35,20 @@ public class Score {
 
     public double[] getDistribution() {
         double maxDiff = Double.MIN_VALUE;
-        for (double diff: diffs) maxDiff = Math.max(diff, maxDiff);
+        for (double diff: diffs) {
+//        		System.out.print(diff + "  ");
+        		maxDiff = Math.max(diff, maxDiff);
+        }
         double[] score = new double[diffs.length];
-        for (int i = 0; i < score.length; i++) score[i] = 1 - diffs[i] / maxDiff;
+        
+        for (int i = 0; i < score.length; i++) {
+        		if (diffs[i] == 0) {
+        			score[i] = 1;
+        		}
+        		else {
+        			score[i] = 1 - diffs[i] / maxDiff;
+        		}        		
+        }
         return score;
     }
 

@@ -13,7 +13,7 @@ import java.util.List;
 public class ImageFeatureExtractor {
 	final static int height = 288;
 	final static int width = 352;
-	final static int MaxPixelTreshold = 50;
+	final static int MaxPixelTreshold = 5000;
 	List<Feature> features = new ArrayList<>();
 
 	public ImageFeatureExtractor(File folder) {
@@ -49,13 +49,16 @@ public class ImageFeatureExtractor {
 				File f = rgbFiles[i];
 				if (f.isFile()) {
 					int[] currentPixels = readPixels(f.getPath());
-					int numMoves = 0;
+					long numMoves = 0;
 					for (int j = 0; j < currentPixels.length; j++) {
+//						System.out.print(Math.abs(currentPixels[i] - prevPixels[i]) + "  ");
 						if (Math.abs(currentPixels[i] - prevPixels[i]) >= MaxPixelTreshold) {
-							numMoves ++;
+							numMoves += Math.abs(currentPixels[i] - prevPixels[i]);
 						}
 					}
+					prevPixels = currentPixels;
 					result[i] = numMoves;
+//					System.out.println(result[i]);
 				}				
 			}
 			assert(result.length != 0);
@@ -68,7 +71,8 @@ public class ImageFeatureExtractor {
 	
 	private class ImageColorExtractor {
 		String name = "rgb color";
-		final int numColors = 5; 
+		final int numColors = 6; 
+//		final int numColors = 3; 
 		public List<int[]> run(File[] rgbFiles) {
 			List<int[]> r = new ArrayList<>();
 			for (File f: rgbFiles) {
@@ -104,14 +108,21 @@ public class ImageFeatureExtractor {
 					// Hue is the actual color
 					
 					float hue = Color.RGBtoHSB(r, g, b, null)[0];
+					
+//					if (hue >= 0 && hue < 1./3) hues[0] += 1;
+//					else if (hue < 2./3) hues[1] += 1;
+//					else  hues[2] += 1;
+					
 					if (hue >= 0 && hue < 1./6) hues[0] += 1;
 					else if (hue < 2./6) hues[1] += 1;
 					else if (hue < 3./6) hues[2] += 1;
 					else if (hue < 4./6) hues[3] += 1;
-					if (hue < 5./6) hues[4] += 1;
+					else if (hue < 5./6) hues[4] += 1;
+					else hues[5] += 1;
 					ind ++;
 				}
 			}
+
 			
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
@@ -155,9 +166,10 @@ public class ImageFeatureExtractor {
 //					original.setRGB(x, y, pix);
 					// Hue is the actual color					
 					pixels[ind] = pix;
-					ind++;	
+					ind++;
 				}
 			}
+			
 			
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
