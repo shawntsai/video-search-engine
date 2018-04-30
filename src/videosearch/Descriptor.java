@@ -19,17 +19,18 @@ public class Descriptor {
 //		System.out.println("method ---- --------------");
 //		System.out.println(feature.method);
 		if (feature.method.equals("rgb color")) {
-			System.out.println("rgb color descriptor");
 			ColorFeature cfeature = (ColorFeature) feature;
 			ColorFeature ctarget = (ColorFeature) target;
 			
 			diffs = setDifferences(cfeature.data, ctarget.data);
-			
+			for (double diff: diffs) {
+				System.out.print(diff + " ");
+			}
 			
 		} else {
 			diffs = setDifferences(listToArray(feature.data), listToArray(target.data));
 		}
-		
+//		
 	}
 	
 	private double[] setDifferences(List<int[]> query, List<int[]> target) {
@@ -41,36 +42,42 @@ public class Descriptor {
 		for (int i = 0; i <= target.size() - query.size(); i++) {
 			double hueDiff = 0;
 			for (int j = 0; j < query.size(); j++) {				
-				hueDiff += getHueDiff(query.get(j), target.get(i + j));				
+				hueDiff += getHueMaxDiff(query.get(j), target.get(i + j));		
 			}
 			if (hueDiff < minHueDiff) {
 				minHueDiff = hueDiff;
 				st = i;
 			}
 		}
-		System.out.println("rgb color");
-		for (int i = st; i < diffs.length; i++) {
-			diffs[i] = getHueDiff(query.get(i), target.get(i));
-//			System.out.print(diffs[i] + " ");
+		
+		for (int i = 0; i < diffs.length; i++) {
+			diffs[i] = getHueMaxDiff(query.get(i), target.get(i + st));			
+		
 		}
-		System.out.println("total is ");
-		System.out.println(target.size());
-		System.out.println("start frame is here");
-		System.out.println(st);
+		
 		setStartRatio(st, target.size());
 		return diffs;
 	}
-	
+	private double getHueMaxDiff(int[] is, int[] is2) {
+		double diff = 0;
+		for (int i = 0; i < is.length; i++) {
+			diff = Math.max(diff, Math.abs(is[i] - is2[i]));
+			
+		}
+		return diff;
+	}
+
 	
 
 	private double getHueDiff(int[] is, int[] is2) {
-		int diff = 0;
+		double diff = 0;
 		for (int i = 0; i < is.length; i++) {
 			diff += Math.abs(is[i] - is2[i]);
+			
 		}
 //		System.out.println("hue diff");
 //		System.out.println(Math.log(diff));
-		return Math.log(diff);
+		return diff;
 	}
 
 	// return scores when we scroll over target video in library

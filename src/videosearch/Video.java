@@ -27,8 +27,9 @@ public class Video {
 		}
 		
 	}
-	
-	
-	
+
+	public Map<String, Feature> getFeatures() {
+		return features;
+	}
 }
  

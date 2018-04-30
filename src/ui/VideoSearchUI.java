@@ -1,9 +1,19 @@
 package ui;
 
+import org.jfree.data.category.CategoryDataset;
+import ui.component.ProgressPanel;
 import ui.controller.ImageParser;
+import ui.controller.PlaySound;
 import ui.controller.VideoPlayer;
 
+import ui.component.LineChart;
+import ui.model.AllResultModel;
+import ui.model.ResultModel;
+import videosearch.VideoSearch;
+
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -30,10 +40,14 @@ public class VideoSearchUI extends JFrame {
         resultTag = new javax.swing.JLabel();
         loadedResult = new javax.swing.JButton();
         TypePanel = new javax.swing.JPanel();
-        total = new javax.swing.JRadioButton();
         motion = new javax.swing.JRadioButton();
         color = new javax.swing.JRadioButton();
-        sound = new javax.swing.JRadioButton();
+        baseFreq = new javax.swing.JRadioButton();
+        visualDspLabel = new javax.swing.JLabel();
+        soundDspLabel = new javax.swing.JLabel();
+        dominantFreq = new javax.swing.JRadioButton();
+        soundPressLevel = new javax.swing.JRadioButton();
+        rootMeanSquare = new javax.swing.JRadioButton();
         SourcePreview = new javax.swing.JPanel();
         playS = new javax.swing.JButton();
         pauseS = new javax.swing.JButton();
@@ -48,26 +62,15 @@ public class VideoSearchUI extends JFrame {
         dbPreviewLabel = new javax.swing.JLabel();
         VisualResult = new javax.swing.JPanel();
         frameChoose = new javax.swing.JSlider();
-        VisualDescriptor = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         searchTag.setText("Find:");
 
-        queryTerm.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                queryTermActionPerformed(evt);
-            }
-        });
-
         submission.setText("search");
 
         loadedsource.setText("Load Query Video");
-        loadedsource.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadedsourceActionPerformed(evt);
-            }
-        });
+
 
         javax.swing.GroupLayout SearchPanelLayout = new javax.swing.GroupLayout(SearchPanel);
         SearchPanel.setLayout(SearchPanelLayout);
@@ -96,21 +99,19 @@ public class VideoSearchUI extends JFrame {
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        result.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+        result.setModel( new ResultModel()
+//                new javax.swing.AbstractListModel<String>() {
+//            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+//            public int getSize() { return strings.length; }
+//            public String getElementAt(int i) { return strings[i]; }
+//        }
+        );
         jScrollPane1.setViewportView(result);
 
         resultTag.setText("Result");
 
         loadedResult.setText("Load Result Video");
-        loadedResult.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadedResultActionPerformed(evt);
-            }
-        });
+
 
         javax.swing.GroupLayout ResultPanelLayout = new javax.swing.GroupLayout(ResultPanel);
         ResultPanel.setLayout(ResultPanelLayout);
@@ -138,75 +139,77 @@ public class VideoSearchUI extends JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        desciptorGroup.add(total);
-        total.setText("Total");
-        total.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                totalActionPerformed(evt);
-            }
-        });
-
         desciptorGroup.add(motion);
         motion.setText("Motion");
 
         desciptorGroup.add(color);
         color.setText("Color");
 
-        desciptorGroup.add(sound);
-        sound.setText("Sound");
+        desciptorGroup.add(baseFreq);
+        baseFreq.setText("Base frequency");
+
+        visualDspLabel.setText("Visual Discriptor");
+
+        soundDspLabel.setText("Sound Discriptor");
+
+        desciptorGroup.add(dominantFreq);
+        dominantFreq.setText("Dominant frequency");
+
+        desciptorGroup.add(soundPressLevel);
+        soundPressLevel.setText("Sound pressure level");
+
+        desciptorGroup.add(rootMeanSquare);
+        rootMeanSquare.setText("Root mean square");
 
         javax.swing.GroupLayout TypePanelLayout = new javax.swing.GroupLayout(TypePanel);
         TypePanel.setLayout(TypePanelLayout);
         TypePanelLayout.setHorizontalGroup(
                 TypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(TypePanelLayout.createSequentialGroup()
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, TypePanelLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addGroup(TypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                                        .addComponent(sound)
+                                .addGroup(TypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(color)
                                         .addComponent(motion)
-                                        .addComponent(total))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(visualDspLabel))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(TypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(rootMeanSquare)
+                                        .addComponent(soundPressLevel)
+                                        .addComponent(baseFreq)
+                                        .addComponent(soundDspLabel)
+                                        .addComponent(dominantFreq))
+                                .addGap(21, 21, 21))
         );
 
-        TypePanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {color, motion, sound, total});
+        TypePanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {baseFreq, color, motion});
 
         TypePanelLayout.setVerticalGroup(
                 TypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(TypePanelLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(total)
+                                .addGroup(TypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(visualDspLabel)
+                                        .addComponent(soundDspLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(motion)
+                                .addGroup(TypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(motion)
+                                        .addComponent(baseFreq))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(color)
+                                .addGroup(TypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(color)
+                                        .addComponent(dominantFreq))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(sound)
-                                .addContainerGap(24, Short.MAX_VALUE))
+                                .addComponent(soundPressLevel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(rootMeanSquare)
+                                .addContainerGap())
         );
 
         playS.setText("Play");
-        playS.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playActionPerformed(e);
-            }
-        });
+
         pauseS.setText("Pause");
-        pauseS.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pauseActionPerformed(e);
-            }
-        });
 
         stopS.setText("Stop");
-        stopS.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                stopActionPerformed(e);
-            }
-        });
 
         queryImageLabel.setIcon(new ImageIcon(defaultImg));
 
@@ -295,32 +298,8 @@ public class VideoSearchUI extends JFrame {
 
         frameChoose.setMaximum(150);
         frameChoose.setMinimum(1);
-        frameChoose.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                frameChooseStateChanged(evt);
-            }
-        });
+        frameChoose.setValue(1);
 
-        javax.swing.GroupLayout VisualResultLayout = new javax.swing.GroupLayout(VisualResult);
-        VisualResult.setLayout(VisualResultLayout);
-        VisualResultLayout.setHorizontalGroup(
-                VisualResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(VisualResultLayout.createSequentialGroup()
-                                .addGap(31, 31, 31)
-                                .addGroup(VisualResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(VisualDescriptor, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-                                        .addComponent(frameChoose, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap(33, Short.MAX_VALUE))
-        );
-        VisualResultLayout.setVerticalGroup(
-                VisualResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, VisualResultLayout.createSequentialGroup()
-                                .addContainerGap(18, Short.MAX_VALUE)
-                                .addComponent(VisualDescriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(frameChoose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
-        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -330,16 +309,18 @@ public class VideoSearchUI extends JFrame {
                                 .addGap(6, 6, 6)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(SourcePreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(ResultPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(layout.createSequentialGroup()
                                                 .addGap(6, 6, 6)
                                                 .addComponent(ResultPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(TypePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addComponent(SearchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(VisualResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                        .addComponent(frameChoose, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(VisualResult, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(SourcePreview, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(ResultPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap(44, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -351,8 +332,10 @@ public class VideoSearchUI extends JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(ResultPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(TypePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-                                .addComponent(VisualResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(VisualResult, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(frameChoose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(SourcePreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -361,23 +344,133 @@ public class VideoSearchUI extends JFrame {
         );
 
         pack();
+
+        // add manually
+        motion.setActionCommand("rgb image motion");
+        color.setActionCommand("rgb color");
+        baseFreq.setActionCommand("base frequency");
+        dominantFreq.setActionCommand("dominant frequency");
+        soundPressLevel.setActionCommand("sound pressure level");
+        rootMeanSquare.setActionCommand("root mean square");
+
+
+        result.addListSelectionListener(e -> selectedResultPerformed(e));
+
+        playS.addActionListener(e -> playActionPerformed(e));
+        stopS.addActionListener(e -> stopActionPerformed(e));
+        pauseS.addActionListener(e -> pauseActionPerformed(e));
+        playR.addActionListener(e -> playActionPerformed(e));
+        stopR.addActionListener(e -> stopActionPerformed(e));
+        pauseR.addActionListener(e -> pauseActionPerformed(e));
+
+
+        submission.addActionListener(e -> queryTermActionPerformed(e));
+        loadedsource.addActionListener(e -> loadedSourceActionPerformed(e));
+        loadedResult.addActionListener(e -> loadedResultActionPerformed(e));
+        frameChoose.addChangeListener(e -> frameChooseStateChanged(e));
+        motion.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        color.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        baseFreq.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        dominantFreq.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        soundPressLevel.addActionListener(e -> descriptorSelectedActionPerformed(e));
+        rootMeanSquare.addActionListener(e -> descriptorSelectedActionPerformed(e));
+
+
     }// </editor-fold>
 
+    /*
+     * When the user submit the query term, do the action
+     */
     private void queryTermActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        String query = this.queryTerm.getText().trim();
+        ButtonModel choice = desciptorGroup.getSelection();
+        if(checkInput(query)) {
+//            ProgressPanel monitor = new ProgressPanel(VideoSearchUI.this, "Compare with Database...",
+//                    this.submission, this.result, query);
+//            monitor.activeProgress(searcher);
+//            String method = choice.getActionCommand();
+//            System.out.println(method);
+
+            searcher.loadQuery(query);
+            searcher.compareDB();
+
+            String method;
+            if(choice == null) {
+                method = DEFAULT_METHOD;
+                baseFreq.setSelected(true);
+            }else {
+                method = choice.getActionCommand();
+            }
+            ResultModel model = new ResultModel();
+            String[] resultList = searcher.getStoredResult().getResultList(method);
+            model.updateModel(resultList);
+            result.setModel(model);
+//            lists = source.getData(query);
+//            model.updateModel(source.buildString(lists));
+//            this.result.setModel(model);
+        }
+
     }
 
-    private void totalActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+    private void descriptorSelectedActionPerformed(ActionEvent evt) {
+        String method = desciptorGroup.getSelection().getActionCommand();
+        this.VisualResult.removeAll();
+        this.VisualResult.revalidate();
+
+        if(!searcher.getStoredResult().isResultEmpty()) {
+            ResultModel model = new ResultModel();
+            String[] resultList = searcher.getStoredResult().getResultList(method);
+            model.updateModel(resultList);
+            result.setModel(model);
+        }
+        System.out.println(method);
     }
 
-    private void loadedResultActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+
+    private boolean checkInput(String query) {
+        if(query != null && !query.isEmpty())
+            return true;
+
+        if(query == null) {
+            JOptionPane.showMessageDialog(null,
+                    "query cannot be empty",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }else if(query.isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "query cannot be empty",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
     }
 
+    /*
+     *  Handle when the slide bar is changed
+     */
     private void frameChooseStateChanged(javax.swing.event.ChangeEvent evt) {
-        // TODO add your handling code here:
+        JSlider source = (JSlider) evt.getSource();
+        if(!source.getValueIsAdjusting()) {
+            System.out.println("stop adjusted");
+            int frameNum = source.getValue();
+            System.out.println("Move to frame Num: " + frameNum);
+            this.queryControl.setCurrentFrame(frameNum);
+            this.queryControl.displayDefaultImg();
+            this.dbControl.setCurrentFrame(frameNum);
+            this.dbControl.displayDefaultImg();
+        }
+    }
 
+    private void selectedResultPerformed(ListSelectionEvent evt) {
+        if(!evt.getValueIsAdjusting()) {
+            LineChart lineChart = new LineChart(this.VisualResult);
+            String method = this.desciptorGroup.getSelection().getActionCommand();
+            String videoName = result.getSelectedValue();
+//            System.out.println(result.getSelectedValue());
+            CategoryDataset dataSets = this.searcher.getStoredResult().getDistribution(method, videoName);
+            lineChart.update(dataSets);
+        }
     }
 
     private void playActionPerformed(ActionEvent evt) {
@@ -385,6 +478,7 @@ public class VideoSearchUI extends JFrame {
             queryControl.play();
         }else if(evt.getSource() == this.playR) {
             // TODO Result Preview player
+            dbControl.play();
         }
 
     }
@@ -392,22 +486,64 @@ public class VideoSearchUI extends JFrame {
     private void pauseActionPerformed(ActionEvent evt) {
         if(evt.getSource() == this.pauseS) {
             queryControl.pause();
+        }else if(evt.getSource() == this.pauseR) {
+            // TODO Result Preview player
+            dbControl.pause();
         }
     }
 
     private void stopActionPerformed(ActionEvent evt) {
         if(evt.getSource() == this.stopS) {
             queryControl.stop();
+        }else if(evt.getSource() == this.stopR) {
+            dbControl.stop();
         }
     }
 
-    private void loadedsourceActionPerformed(java.awt.event.ActionEvent evt) {
+    private void loadedSourceActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO bind query term:
-        ImageParser source= new ImageParser(150);
-        queryFrames = source.parseAllImg();
-        this.queryControl = new VideoPlayer(150,queryImageLabel,queryFrames);
+        String query = this.queryTerm.getText().trim();
+        if(query == null || query.isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "query is empty",
+                    "Load Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        ImageParser source= new ImageParser(150, query, QUERY_FOLDER);
+        queryFrames = source.parseAllImg(FRAME_ON_QUERY, true);
+        queryImageLabel.setIcon(new ImageIcon(queryFrames[FRAME_ON_QUERY]));
+
+        String audioPath = QUERY_FOLDER + query + "/" + query + ".wav";
+        PlaySound soundPlayer = new PlaySound(audioPath);
+        this.queryControl = new VideoPlayer(150, queryImageLabel,
+                queryFrames, soundPlayer, this.playS);
 
     }
+
+    private void loadedResultActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
+        if(result.getSelectedValue() == null) {
+            JOptionPane.showMessageDialog(null,
+                    "Please select one result",
+                    "Load Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String method = this.desciptorGroup.getSelection().getActionCommand();
+        String videoName = result.getSelectedValue();
+        int startFrame = searcher.getStoredResult().getResultStartAt(method,videoName);
+        ImageParser source = new ImageParser(150, videoName, DB_FOLDER);
+        resultFrames = source.parseAllImg(startFrame, false);
+        dbImageLabel.setIcon(new ImageIcon(resultFrames[FRAME_ON_QUERY]));
+
+        String audioPath = DB_FOLDER + videoName + "/" +videoName + ".wav";
+        PlaySound soundPlayer = new PlaySound(audioPath);
+        this.dbControl = new VideoPlayer(150, dbImageLabel, resultFrames, soundPlayer,
+                this.playR);
+        this.dbControl.setCurrentSoundFrame(startFrame);
+    }
+
 
     /**
      * @param args the command line arguments
@@ -437,13 +573,14 @@ public class VideoSearchUI extends JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        VideoSearchUI ui = new VideoSearchUI();
-        ui.setVisible(true);
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new VideoSearchUI().setVisible(true);
-//            }
-//        });
+//        VideoSearchUI ui = new VideoSearchUI();
+//        ui.setVisible(true);
+        searcher.loadDataBase();
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new VideoSearchUI().setVisible(true);
+            }
+        });
     }
 
     // Variables declaration - do not modify
@@ -452,12 +589,14 @@ public class VideoSearchUI extends JFrame {
     private javax.swing.JPanel SearchPanel;
     private javax.swing.JPanel SourcePreview;
     private javax.swing.JPanel TypePanel;
-    private javax.swing.JScrollPane VisualDescriptor;
     private javax.swing.JPanel VisualResult;
+    private javax.swing.JPanel VisualResultPanel;
+    private javax.swing.JRadioButton baseFreq;
     private javax.swing.JRadioButton color;
     private javax.swing.JLabel dbImageLabel;
     private javax.swing.JLabel dbPreviewLabel;
     private javax.swing.ButtonGroup desciptorGroup;
+    private javax.swing.JRadioButton dominantFreq;
     private javax.swing.JSlider frameChoose;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton loadedResult;
@@ -472,19 +611,26 @@ public class VideoSearchUI extends JFrame {
     private javax.swing.JTextField queryTerm;
     private javax.swing.JList<String> result;
     private javax.swing.JLabel resultTag;
+    private javax.swing.JRadioButton rootMeanSquare;
     private javax.swing.JLabel searchTag;
-    private javax.swing.JRadioButton sound;
+    private javax.swing.JLabel soundDspLabel;
+    private javax.swing.JRadioButton soundPressLevel;
     private javax.swing.JButton stopR;
     private javax.swing.JButton stopS;
     private javax.swing.JButton submission;
-    private javax.swing.JRadioButton total;
+    private javax.swing.JLabel visualDspLabel;
     // End of variables declaration
 
     // custom variable for handling event
-    private final static String PATH = "query/first/first001.rgb";
-    private BufferedImage defaultImg = new ImageParser(150).parseImg(PATH);
+    private String defaultImg = "assets/default.png";
     private BufferedImage[] queryFrames;
     private BufferedImage[] resultFrames;
     private VideoPlayer queryControl;
-
+    private VideoPlayer dbControl;
+    private static VideoSearch searcher = new VideoSearch();
+    private final static String DEFAULT_METHOD = "base frequency";
+    private final static String QUERY_FOLDER = "query/";
+    private final static String DB_FOLDER = "database_videos/";
+    private final static int FRAME_ON_QUERY = 1;
+//    private final static int IMG_TO_SOUND_RATIO = 221184/150;
 }

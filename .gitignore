@@ -10,6 +10,7 @@ database_videos/
 .settings/
 .idea/
 out/
+assets/
 
 # Compiled class file
 *.class

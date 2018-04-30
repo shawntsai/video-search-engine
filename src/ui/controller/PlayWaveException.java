@@ -1,4 +1,4 @@
-package videosearch;
+package ui.controller;
 
 /**
  * @author Giulio

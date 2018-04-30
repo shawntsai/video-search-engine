@@ -57,7 +57,8 @@ public class ImageFeatureExtractor {
 						}
 					}
 					prevPixels = currentPixels;
-					result[i] = Math.log(numMoves);
+					result[i] = numMoves;
+//					System.out.println(result[i]);
 				}				
 			}
 			assert(result.length != 0);
@@ -71,6 +72,7 @@ public class ImageFeatureExtractor {
 	private class ImageColorExtractor {
 		String name = "rgb color";
 		final int numColors = 6; 
+//		final int numColors = 3; 
 		public List<int[]> run(File[] rgbFiles) {
 			List<int[]> r = new ArrayList<>();
 			for (File f: rgbFiles) {
@@ -107,6 +109,10 @@ public class ImageFeatureExtractor {
 					
 					float hue = Color.RGBtoHSB(r, g, b, null)[0];
 					
+//					if (hue >= 0 && hue < 1./3) hues[0] += 1;
+//					else if (hue < 2./3) hues[1] += 1;
+//					else  hues[2] += 1;
+					
 					if (hue >= 0 && hue < 1./6) hues[0] += 1;
 					else if (hue < 2./6) hues[1] += 1;
 					else if (hue < 3./6) hues[2] += 1;
@@ -116,6 +122,7 @@ public class ImageFeatureExtractor {
 					ind ++;
 				}
 			}
+
 			
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
