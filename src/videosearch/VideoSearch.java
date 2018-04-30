@@ -31,20 +31,24 @@ public class VideoSearch {
 			queryVideo.extractFeature();
 			
 			for (String method: queryVideo.features.keySet()) {
-//				System.out.println("rank this");
-//				System.out.println(method);
+//				if (! method.equals("rgb image motion") || ! method.equals("rgb color")) continue;
+				System.out.println("rank this");
+				System.out.println(method);
 				Rank ranker = new Rank(videos, method);
 				ranker.compare(queryVideo.features.get(method));
 				int i = 1;
 				while (ranker.scores.isEmpty() == false) {
 					Score s = ranker.scores.poll();
-					System.out.println(i++);
-					System.out.println(s.videoName);			
+//					System.out.println(i++);
+//					System.out.println(s.videoName);			
 //					System.out.println(s.score);
-					System.out.println(s.ratio);
-					System.out.println("start frame is ");
-					System.out.println((int) (600 * s.ratio));
-					System.out.println(s.getDistribution());
+//					System.out.println(s.ratio);
+//					System.out.println("start frame is ");
+//					System.out.println((int) (600 * s.ratio));
+					for (double t: s.getDistribution()) {
+						System.out.print(t);
+						System.out.print(" ");
+					}
 				}
 			}
 			

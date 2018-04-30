@@ -36,20 +36,22 @@ public class Descriptor {
 		System.out.println(query.size());
 		System.out.println(target.size());
 		double[] diffs = new double[query.size()];
-		int minHueDiff = Integer.MAX_VALUE;
+		double minHueDiff = Double.MAX_VALUE;
 		int st = 0;
 		for (int i = 0; i <= target.size() - query.size(); i++) {
-			int hueDiff = 0;
+			double hueDiff = 0;
 			for (int j = 0; j < query.size(); j++) {				
-				hueDiff += Math.abs(getHueDiff(query.get(j), target.get(i + j)));				
+				hueDiff += getHueDiff(query.get(j), target.get(i + j));				
 			}
 			if (hueDiff < minHueDiff) {
 				minHueDiff = hueDiff;
 				st = i;
 			}
 		}
+		System.out.println("rgb color");
 		for (int i = st; i < diffs.length; i++) {
-			diffs[i] = Math.abs(getHueDiff(query.get(i), target.get(i)));
+			diffs[i] = getHueDiff(query.get(i), target.get(i));
+//			System.out.print(diffs[i] + " ");
 		}
 		System.out.println("total is ");
 		System.out.println(target.size());
@@ -61,12 +63,14 @@ public class Descriptor {
 	
 	
 
-	private int getHueDiff(int[] is, int[] is2) {
+	private double getHueDiff(int[] is, int[] is2) {
 		int diff = 0;
 		for (int i = 0; i < is.length; i++) {
 			diff += Math.abs(is[i] - is2[i]);
 		}
-		return diff;
+//		System.out.println("hue diff");
+//		System.out.println(Math.log(diff));
+		return Math.log(diff);
 	}
 
 	// return scores when we scroll over target video in library
