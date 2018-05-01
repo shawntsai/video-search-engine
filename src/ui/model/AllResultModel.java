@@ -7,15 +7,14 @@ import videosearch.Score;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 public class AllResultModel {
     private final static int NUM_OF_FRAMES_DB = 600;
     // For these two map, key is the descriptor
     private Map<String, Rank> allResult = new HashMap<>();
     private Map<String, String[]> cacheListResult = new HashMap<>();
-    private Map<String, Map<String, CategoryDataset>> cacheDistributionDataset = new HashMap<>();
-    private Map<String, Map<String, Integer>> cahedResultStartFrame = new HashMap<>();
+    private Map<String, Map<String, CategoryDataset>> cacheDistributionDataSet = new HashMap<>();
+    private Map<String, Map<String, Integer>> cachedResultStartFrame = new HashMap<>();
 
     public void setResult(String method, Rank result) {
         this.allResult.put(method, result);
@@ -34,11 +33,11 @@ public class AllResultModel {
     }
 
     public CategoryDataset getDistribution(String method, String videoName) {
-        return this.cacheDistributionDataset.get(method).get(videoName);
+        return this.cacheDistributionDataSet.get(method).get(videoName);
     }
 
     public int getResultStartAt(String method, String videoName) {
-        return this.cahedResultStartFrame.get(method).get(videoName);
+        return this.cachedResultStartFrame.get(method).get(videoName);
     }
 
     private String[] buildListFromDB(String method) {
@@ -62,8 +61,8 @@ public class AllResultModel {
             i++;
         }
         cacheListResult.put(method,output);
-        cacheDistributionDataset.put(method, videoDistribution);
-        cahedResultStartFrame.put(method, startFrame);
+        cacheDistributionDataSet.put(method, videoDistribution);
+        cachedResultStartFrame.put(method, startFrame);
         return output;
     }
 
@@ -81,7 +80,6 @@ public class AllResultModel {
         DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
         for(int i = 0; i < data.length; i++) {
             dataSet.addValue(data[i],"similarity", Integer.toString(i));
-            System.out.println(data[i]);
         }
         return dataSet;
     }

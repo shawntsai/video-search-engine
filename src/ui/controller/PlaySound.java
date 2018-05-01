@@ -38,7 +38,7 @@ public class PlaySound {
             //add buffer for mark/reset support, modified by Jian
             InputStream bufferedIn = new BufferedInputStream(this.waveStream);
             audioInputStream = AudioSystem.getAudioInputStream(bufferedIn);
-            System.out.println("Audio frame length:" + audioInputStream.getFrameLength());
+//            System.out.println("Audio frame length:" + audioInputStream.getFrameLength());
 
         } catch (UnsupportedAudioFileException e1) {
             throw new PlayWaveException(e1);
@@ -66,7 +66,7 @@ public class PlaySound {
 
     public void pause() {
         stopTime = dataClip.getFramePosition();
-        System.out.println("STOP AUDIO at: " + stopTime);
+//        System.out.println("STOP AUDIO at: " + stopTime);
         dataClip.stop();
 
     }

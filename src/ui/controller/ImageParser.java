@@ -11,8 +11,8 @@ public class ImageParser {
     private final static String filePostfix = ".rgb";
     private BufferedImage[] frames;
 
-    public ImageParser(int framsNum, String filePrefix, String folderDest) {
-        frames = new BufferedImage[framsNum + 1];
+    public ImageParser(int framesNum, String filePrefix, String folderDest) {
+        frames = new BufferedImage[framesNum + 1];
         this.filePrefix = filePrefix;
         this.folder = folderDest+ filePrefix +"/";
     }

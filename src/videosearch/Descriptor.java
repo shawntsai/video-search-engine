@@ -101,10 +101,10 @@ public class Descriptor {
 		for (int i = 0; i < diffs.length; i++) {
 			diffs[i] = Math.abs(target[i + st] - query[i]);
 		}
-		System.out.println("total is ");
-		System.out.println(target.length);
-		System.out.println("start frame is here");
-		System.out.println(st);
+//		System.out.println("total is ");
+//		System.out.println(target.length);
+//		System.out.println("start frame is here");
+//		System.out.println(st);
 		setStartRatio(st, target.length);
 		return diffs;
 	}
@@ -120,15 +120,4 @@ public class Descriptor {
 		}
 		return result;
 	}
-	
-
-	
-	private double absoluteDistance(double[] array1, double[] array2) {
-		double difference = 0;
-		for (int i = 0; i < array1.length; i++) {
-			difference += Math.abs(array1[i] - array2[i]);
-		}
-		return difference / array1.length;
-	}
-	
 }

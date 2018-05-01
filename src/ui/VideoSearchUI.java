@@ -1,7 +1,6 @@
 package ui;
 
 import org.jfree.data.category.CategoryDataset;
-import ui.component.ProgressPanel;
 import ui.controller.ImageParser;
 import ui.controller.PlaySound;
 import ui.controller.VideoPlayer;
@@ -424,7 +423,7 @@ public class VideoSearchUI extends JFrame {
             model.updateModel(resultList);
             result.setModel(model);
         }
-        System.out.println(method);
+//        System.out.println(method);
     }
 
 
@@ -452,9 +451,9 @@ public class VideoSearchUI extends JFrame {
     private void frameChooseStateChanged(javax.swing.event.ChangeEvent evt) {
         JSlider source = (JSlider) evt.getSource();
         if(!source.getValueIsAdjusting()) {
-            System.out.println("stop adjusted");
+//            System.out.println("stop adjusted");
             int frameNum = source.getValue();
-            System.out.println("Move to frame Num: " + frameNum);
+//            System.out.println("Move to frame Num: " + frameNum);
             this.queryControl.setCurrentFrame(frameNum);
             this.queryControl.displayDefaultImg();
             this.dbControl.setCurrentFrame(frameNum);

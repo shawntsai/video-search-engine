@@ -60,14 +60,7 @@ public class VideoSearch {
 		return storedResult;
 	}
 
-	public void compareDBviaMethod(String method) {
-		Rank ranker = new Rank(videos, method);
-		ranker.compare(queryVideo.features.get(method));
-		storedResult.setResult(method, ranker);
-	}
 
-
-	
 //			System.out.println("======");
 //			Rank motion = allResult.get("rgb image motion");
 //			int i = 1;
